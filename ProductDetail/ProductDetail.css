@@ -3,9 +3,17 @@
     min-height: 80vh;
     padding: 60px 40px;
     display: flex;
+    flex-wrap: wrap;
     gap: 50px;
     max-width: 1000px;
     margin: 0 auto;
+}
+
+/* =========================================================
+   PRODUCT PHOTO (single image — no gallery/thumbnails)
+========================================================= */
+.gallery {
+    display: flex;
 }
 
 .detail-image {
@@ -16,8 +24,12 @@
     background-color: var(--brown);
 }
 
+/* =========================================================
+   PRODUCT INFO
+========================================================= */
 .detail-info {
     flex: 1;
+    min-width: 260px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -28,10 +40,17 @@
     font-weight: bold;
 }
 
-.detail-variant {
+.detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 0.9rem;
-    opacity: 0.7;
 }
+
+.star { color: var(--brown); opacity: 0.3; }
+.star.filled { opacity: 1; color: #E0A94C; }
+
+.detail-stars .star { font-size: 1rem; }
 
 .detail-price {
     font-size: 1.4rem;
@@ -45,40 +64,878 @@
     margin-bottom: 12px;
 }
 
+/* =========================================================
+   QUANTITY SELECTOR  (FIXED - matches Figma design)
+   One rounded pill container: [ − ] [ dark inner pill: 1 ] [ + ]
+========================================================= */
 .quantity-selector {
     display: flex;
     align-items: center;
-    gap: 12px;
+    width: fit-content;
+    border: 1.5px solid var(--brown);
+    border-radius: 12px;
+    overflow: hidden;
     margin-bottom: 16px;
+    background: transparent;
 }
 
 .quantity-selector button {
-    width: 36px;
-    height: 36px;
-    border: 1.5px solid var(--brown);
+    width: 44px;
+    height: 40px;
+    border: none;
     background: transparent;
-    font-size: 1.2rem;
+    color: var(--brown);
+    font-size: 1.3rem;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    padding: 0;
+    border-radius: 0;
 }
 
+.quantity-selector button:hover {
+    background: rgba(33, 15, 4, 0.07);
+}
+
+/* The number sits inside a dark rounded pill, centered */
 .quantity-selector input {
-    width: 60px;
+    width: 64px;
+    height: 28px;
     text-align: center;
-    padding: 8px;
-    border: 1.5px solid var(--brown);
-    font-family: var(--font);
+    border: none;
+    border-radius: 999px;
+    background: var(--brown);
+    color: var(--white);
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0;
+    outline: none;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* =========================================================
+   ACTION BUTTONS  (FIXED - matches Figma design)
+========================================================= */
+.add-to-cart-btn,
+.buy-now-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 10px;
+    min-width: 190px;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .add-to-cart-btn {
+    background: var(--brown);
+    color: var(--white);
+    border: 1.5px solid var(--brown);
+}
+
+.add-to-cart-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.add-to-cart-btn:hover {
+    background: #3a1e0d; /* slightly darker brown */
+}
+
+/* Add to Cart click feedback: a quick pop + a green tint while the
+   button shows a checkmark and "Added!" (see setupAddToCart() in
+   ProductDetail.js). Both revert automatically after ~1.2s. */
+.add-to-cart-btn.added {
+    background: #3f7d4f;
+    border-color: #3f7d4f;
+    animation: add-to-cart-pop 0.4s ease;
+}
+
+@keyframes add-to-cart-pop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(0.92); }
+    65%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+
+.buy-now-btn {
+    background: transparent;
+    color: var(--brown);
+    border: 1.5px solid var(--brown);
+}
+
+.buy-now-btn:hover {
+    background: var(--brown);
+    color: var(--white);
+}
+
+/* =========================================================
+   REVIEWS SECTION
+========================================================= */
+.reviews-section {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.reviews-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+}
+
+.reviews-layout {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* --- Rating summary + progress bars --- */
+.rating-summary {
+    width: 260px;
+    flex-shrink: 0;
+    padding-right: 24px;
+    border-right: 3px solid rgba(33, 15, 4, 0.5);
+}
+
+.rating-average {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.rating-out-of {
+    font-size: 1.2rem;
+    font-weight: normal;
+    opacity: 0.6;
+}
+
+.rating-stars-large { margin: 8px 0; font-size: 1.2rem; }
+
+.rating-total {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 3px solid rgba(33, 15, 4, 0.5);
+}
+
+.rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.bar-label {
+    width: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.bar-num { width: 16px; text-align: right; }
+.bar-star { width: 16px; text-align: left; font-size: 0.9em; }
+
+.bar-track {
+    flex: 1;
+    height: 14px;
+    background: transparent;
+    border: 3px solid var(--brown);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: var(--brown);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.bar-count { width: 20px; text-align: right; flex-shrink: 0; opacity: 0.75; }
+
+/* --- Review list panel --- */
+.reviews-list-panel {
+    flex: 1;
+    min-width: 280px;
+}
+
+.reviews-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.write-review-btn {
+    padding: 10px 18px;
+    background: var(--brown);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sort-dropdown {
+    position: relative;
+}
+
+.sort-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border: 1.5px solid var(--brown);
+    border-radius: 999px;
+    background: var(--cream);
+    font-family: 'Quicksand', var(--font);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--brown);
+    cursor: pointer;
+}
+
+.sort-trigger:hover {
+    background: var(--white);
+}
+
+.sort-icon,
+.sort-chevron {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+.sort-chevron {
+    transition: transform 0.15s ease;
+}
+
+.sort-dropdown.open .sort-chevron {
+    transform: rotate(180deg);
+}
+
+.sort-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 230px;
+    background: var(--cream);
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(33, 15, 4, 0.3);
+    padding: 8px;
+    list-style: none;
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+
+.sort-dropdown.open .sort-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.sort-option {
+    display: grid;
+    grid-template-columns: 18px 20px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.sort-option:hover {
+    background: rgba(33, 15, 4, 0.08);
+}
+
+.sort-option.active {
+    background: var(--brown);
+    color: var(--white);
+}
+
+.sort-option .sort-check,
+.sort-option .sort-option-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sort-option .sort-check svg,
+.sort-option .sort-option-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.sort-option .sort-check {
+    visibility: hidden;
+}
+
+.sort-option.active .sort-check {
+    visibility: visible;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.review-card {
+    background: transparent;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 8px;
+    padding: 16px 18px;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.review-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.review-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.review-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.review-name { font-weight: 600; font-size: 0.95rem; }
+.review-stars { font-size: 0.8rem; }
+
+.review-date {
+    margin-left: auto;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    white-space: nowrap;
+}
+
+.review-comment {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.no-reviews {
+    opacity: 0.65;
+    font-size: 0.9rem;
+    padding: 20px 0;
+}
+
+/* =========================================================
+   MODAL BASE (shared by Write a Review + Order Summary)
+========================================================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(33, 15, 4, 0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal {
+    position: relative;
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal h3 {
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--brown);
+}
+
+/* =========================================================
+   WRITE A REVIEW MODAL
+========================================================= */
+#review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#review-form label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+#review-form input[type="text"],
+#review-form textarea {
+    padding: 10px;
+    border: 1.5px solid var(--brown);
+    border-radius: 4px;
+    font-family: 'Quicksand', var(--font);
+    background: var(--white);
+    resize: none;
+}
+
+#review-form textarea {
+    min-height: 90px;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+.reviewing-as {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--white);
+    border: 1.5px solid var(--brown);
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+.reviewing-as .review-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+}
+
+.reviewing-as-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.star-input {
+    display: flex;
+    gap: 6px;
+    font-size: 1.6rem;
+}
+
+.star-choice {
+    color: var(--brown);
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.1s ease;
+}
+
+.star-choice.selected {
+    opacity: 1;
+    color: #E0A94C;
+}
+
+.submit-review-btn {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--brown);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .detail-image {
+        width: 100%;
+        max-width: 320px;
+        height: 320px;
+    }
+}
+
+/* =========================================================
+   ORDER SUMMARY MODAL
+   Background page stays visible: 20% black + blur over it.
+   Sized wider than the review modal so the two payment pills
+   never have to wrap their label to a second line.
+========================================================= */
+.order-summary-overlay {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.order-summary-modal {
+    max-width: 540px;
+    max-height: 85vh;
+    overflow-y: auto; /* the OUTER modal scroll — only kicks in if content truly can't fit */
+    overscroll-behavior: contain;
+    padding: 26px 26px 22px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(33, 15, 4, 0.3) transparent;
+}
+
+.order-summary-modal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-summary-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.order-summary-modal::-webkit-scrollbar-thumb {
+    background: rgba(33, 15, 4, 0.3);
+    border-radius: 999px;
+}
+
+.order-summary-modal h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+.order-section {
+    margin-bottom: 16px;
+}
+
+.order-section h4 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.order-field-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.order-field {
+    flex: 1;
+    min-width: 0;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 10px;
+    padding: 7px 12px 5px;
+}
+
+.order-field:focus-within {
+    border-color: var(--brown);
+}
+
+.order-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(33, 15, 4, 0.75);
+    margin-bottom: 2px;
+}
+
+.order-field input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.9rem;
+    color: var(--brown);
+    outline: none;
+}
+
+.delivery-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.delivery-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.delivery-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.delivery-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.delivery-label {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.delivery-location {
+    display: block;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.delivery-note {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Order Items — its own dark scroll container, independent of the modal's
+   scroll. This is the ONLY part of the card that should ever need to
+   scroll in normal use; the rest of the modal is sized to fit without one. */
+.order-items-list {
+    background: var(--brown);
+    border-radius: 12px;
+    padding: 10px;
+    max-height: 182px; /* ~2-3 rows visible, rest scrolls inside here only */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.order-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-items-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+}
+
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--white);
+}
+
+/* Just an image placeholder slot — transparent so it disappears until a
+   real product photo is set, instead of showing a solid white box. */
+.order-item-thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.order-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.order-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.order-item-qty {
+    align-self: flex-start;
+    background: #C98A4B;
+    color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.order-item-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.order-summary-bottom {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.order-total-box,
+.order-payment-box {
+    flex: 1;
+    min-width: 170px;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.order-total-box h4,
+.order-payment-box h4 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.order-total-row.muted {
+    color: rgba(33, 15, 4, 0.5);
+}
+
+.order-total-row.highlight {
+    background: #FBE9A1;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 8px -4px -4px;
+    font-weight: 700;
+}
+
+.payment-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.payment-btn {
+    flex: 1;
+    padding: 9px 6px;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--brown);
+    font-family: 'Quicksand', var(--font);
+    font-weight: 600;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.payment-btn.active {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: var(--white);
+}
+
+.payment-note {
+    background: #FBE9A1;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.74rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.place-order-btn {
+    width: 100%;
+    margin-top: 16px;
     padding: 14px;
     background: var(--brown);
     color: var(--white);
     border: none;
-    font-family: var(--font);
-    font-weight: bold;
-    letter-spacing: 1px;
+    border-radius: 10px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    border-radius: 4px;
-    max-width: 300px;
+}
+
+.place-order-btn:hover {
+    background: #3a1e0d;
+}
+
+@media (max-width: 480px) {
+    .order-summary-modal {
+        max-height: 90vh;
+        padding: 20px 16px 18px;
+    }
+    .order-summary-modal h3 {
+        font-size: 1.3rem;
+    }
+    .order-summary-bottom {
+        flex-direction: column;
+    }
+    .order-field-row {
+        flex-direction: column;
+    }
+    .order-items-list {
+        max-height: 150px;
+    }
+    .payment-btn {
+        /* boxes stack full-width here, so the pills have plenty of room */
+        font-size: 0.8rem;
+        padding: 10px 8px;
+    }
 }

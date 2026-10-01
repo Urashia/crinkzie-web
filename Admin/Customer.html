@@ -4,21 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customers</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../supabase-config.js" defer></script>
+    <script src="Customers.js" defer></script>
+
     <link rel="stylesheet" href="../Common.css">
     <link rel="stylesheet" href="Customers.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabase-config.js"></script>
-    <script src="Customers.js" defer></script>
 </head>
 <body>
     <header>
         <div class="logo"><img src="../Landing/OreoBitesLogo.jpg" alt="OreoBites logo"></div>
         <nav>
             <ul>
-                <li><a href="Dashboard.html">Dashboard</a></li>
-                <li><a href="Products.html">Products</a></li>
-                <li><a href="Orders.html">Orders</a></li>
-                <li><a href="Customers.html">Customers</a></li>
+                <li><a href="../Admin/Dashboard.html">Dashboard</a></li>
+                <li><a href="../Admin/Products.html">Products</a></li>
+                <li><a href="../Admin/Orders.html">Orders</a></li>
+                <li><a href="../Admin/Customer.html">Customers</a></li>
             </ul>
         </nav>
         <a href="#logout" aria-label="Log out" class="logout-icon">
@@ -31,26 +36,43 @@
     </header>
 
     <main>
-        <section class="customers-view active" id="customers-view">
-            <h1>Customers</h1>
+        <section class="customers-view" id="customers-view">
+            <div class="customers-header">
+                <h1>Customers</h1>
 
-            <table class="customers-table">
-                <thead>
-                    <tr>
-                        <th>Student ID</th>
-                        <th>Name</th>
-                        <th>Year and Section</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="customers-table-body"></tbody>
-            </table>
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input type="search" id="customer-search" placeholder="Search by name or Student ID" aria-label="Search customers by name or Student ID">
+                </div>
+            </div>
+
+            <div class="customers-table-wrapper">
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Year and Section</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-table-body"></tbody>
+                </table>
+            </div>
+
+            <div class="pagination" id="customers-pagination"></div>
         </section>
 
-        <section class="customer-detail-view" id="customer-detail-view">
-            <button type="button" id="back-to-list-btn" class="back-btn">&larr; Back</button>
+        <!-- CUSTOMER DETAIL MODAL (opened by the table's view button) -->
+        <div class="customer-detail-overlay" id="customer-detail-view">
+            <div class="customer-detail-card" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+                <button type="button" id="detail-close-btn" class="detail-close-btn" aria-label="Close">×</button>
 
-            <div class="customer-detail-card">
                 <div class="customer-detail-header">
                     <div class="customer-avatar">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -95,7 +117,7 @@
 
                 <button type="button" id="deactivate-btn" class="deactivate-btn">Deactivate Account</button>
             </div>
-        </section>
+        </div>
     </main>
 
     <footer>
@@ -105,10 +127,10 @@
         </div>
         <nav class="footer-nav">
             <ul>
-                <li><a href="Dashboard.html">Dashboard</a></li>
-                <li><a href="Products.html">Products</a></li>
-                <li><a href="Orders.html">Orders</a></li>
-                <li><a href="Customers.html">Customers</a></li>
+                <li><a href="../Admin/Dashboard.html">Dashboard</a></li>
+                <li><a href="../Admin/Products.html">Products</a></li>
+                <li><a href="../Admin/Orders.html">Orders</a></li>
+                <li><a href="../Admin/Customer.html">Customers</a></li>
             </ul>
         </nav>
     </div>

@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="../supabase-config.js" defer></script>
     <script src="../auth-header.js" defer></script>
     <script src="Signup.js" defer></script>
+    <script src="../sticky-header.js" defer></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../Common.css">
     <link rel="stylesheet" href="Account.css">
@@ -18,20 +24,13 @@
             <nav>
                 <ul>
                     <li><a href = "../Landing/Home.html"> HOME</a></li>
-                    <li><a href = "about"> ABOUT</a></li>
-                    <li><a href = "contact"> CONTACT</a></li>
-                    <li><a href = "shop"> SHOP</a></li>
-                    <li><a href = "reviews"> REVIEWS</a></li>
+                    <li><a href="../Landing/Home.html#about">About</a></li>
+                    <li><a href="../Landing/Home.html#contact">Contact</a></li>
+                    <li><a href = "../Shop/Shop.html"> SHOP</a></li>
                 </ul>
             </nav>
 
         <div class="header-icons">
-            <a href="#search" aria-label="Search">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </a>
     
             <a href="../Log-in/Account.html" aria-label="Account">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -186,13 +185,11 @@
 
         <nav class="footer-nav">
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="#shop">Shop</a></li>
-                <li><a href="#reviews">Reviews</a></li>
-                <li><a href="#account">Account</a></li>
-                <li><a href="#login">Login</a></li>
+                <li><a href="../Landing/Home.html">Home</a></li>
+                <li><a href="../Landing/Home.html#about">About</a></li>
+                <li><a href="../Landing/Home.html#contact">Contact</a></li>
+                <li><a href="../Shop/Shop.html">Shop</a></li>
+                <li><a href="../Log-in/Account.html" id="footer-account-link">Account</a></li>
             </ul>
         </nav>
 

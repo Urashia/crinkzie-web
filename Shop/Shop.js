@@ -27,7 +27,7 @@ function renderProducts(productList) {
         card.innerHTML = `
             ${imageHtml}
             <p class="product-name">${product.name}</p>
-            <p class="product-desc">${product.description}</p>
+            <p class="product-desc">${product.description || ''}</p>
             <p class="product-price">₱${product.price.toLocaleString()}</p>
         `;
 

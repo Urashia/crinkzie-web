@@ -4,21 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../supabase-config.js" defer></script>
+    <script src="Products.js" defer></script>
+
     <link rel="stylesheet" href="../Common.css">
     <link rel="stylesheet" href="Products.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabase-config.js"></script>
-    <script src="Products.js" defer></script>
 </head>
 <body>
     <header>
         <div class="logo"><img src="../Landing/OreoBitesLogo.jpg" alt="OreoBites logo"></div>
         <nav>
             <ul>
-                <li><a href="Dashboard.html">Dashboard</a></li>
-                <li><a href="Products.html">Products</a></li>
-                <li><a href="Orders.html">Orders</a></li>
-                <li><a href="Customers.html">Customers</a></li>
+                <li><a href="../Admin/Dashboard.html">Dashboard</a></li>
+                <li><a href="../Admin/Products.html">Products</a></li>
+                <li><a href="../Admin/Orders.html">Orders</a></li>
+                <li><a href="../Admin/Customer.html">Customers</a></li>
             </ul>
         </nav>
         <a href="#logout" aria-label="Log out" class="logout-icon">
@@ -31,78 +36,81 @@
     </header>
 
     <main>
-        <!-- VIEW 1: product table -->
-        <section class="products-view active" id="products-view">
+        <section class="products-view" id="products-view">
             <div class="products-header">
                 <h1>Products</h1>
                 <button id="add-product-btn" class="add-product-btn">ADD PRODUCT</button>
             </div>
 
-            <table class="products-table">
-                <thead>
-                    <tr>
-                        <th>Photo</th>
-                        <th>Name</th>
-                        <th>Variant</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="products-table-body">
-                    <!-- JS fills this in -->
-                </tbody>
-            </table>
+            <div class="products-table-wrapper">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body"></tbody>
+                </table>
+            </div>
         </section>
 
-        <!-- VIEW 2: add/edit form -->
-        <section class="product-form-view" id="product-form-view">
-            <h1>Products</h1>
+        <!-- PRODUCT FORM MODAL -->
+        <div class="product-form-overlay" id="product-form-overlay">
+            <div class="product-form-card" role="dialog" aria-modal="true" aria-labelledby="form-title">
+                <button type="button" id="form-close-btn" class="form-close-btn" aria-label="Close">×</button>
 
-            <form id="product-form" class="product-form">
-                <input type="hidden" id="product-id">
+                <form id="product-form" class="product-form">
+                    <input type="hidden" id="product-id">
 
-                <div class="form-top-row">
-                    <div class="photo-preview" id="photo-preview">
-                        <span>No image</span>
+                    <div class="form-top-row">
+                        <div class="photo-preview" id="photo-preview">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <path d="M21 15l-5-5L5 21"></path>
+                            </svg>
+                        </div>
+
+                        <div class="photo-upload">
+                            <label>Product Photo</label>
+                            <div class="file-input-wrapper">
+                                <label for="product-photo" class="file-choose-btn">Choose File</label>
+                                <span id="file-chosen-label">No File Chosen</span>
+                                <input type="file" id="product-photo" accept="image/*" hidden>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="photo-upload">
-                        <label>Product Photo</label>
-                        <input type="file" id="product-photo" accept="image/*">
+                    <div class="form-grid">
+                        <div class="form-field wide">
+                            <label for="product-name">Product Name</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="product-price">Price</label>
+                            <input type="number" id="product-price" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="product-stock">Stocks</label>
+                            <input type="number" id="product-stock" required>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-grid">
                     <div class="form-field wide">
-                        <label for="product-name">Product Name</label>
-                        <input type="text" id="product-name" required>
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" rows="4" required></textarea>
                     </div>
-                    <div class="form-field">
-                        <label for="product-variant">Variant</label>
-                        <input type="text" id="product-variant">
-                    </div>
-                    <div class="form-field">
-                        <label for="product-price">Price</label>
-                        <input type="number" id="product-price" required>
-                    </div>
-                    <div class="form-field">
-                        <label for="product-stock">Stocks</label>
-                        <input type="number" id="product-stock" required>
-                    </div>
-                </div>
 
-                <div class="form-field wide">
-                    <label for="product-description">Description</label>
-                    <textarea id="product-description" rows="4" required></textarea>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" id="cancel-btn" class="cancel-btn">Cancel</button>
-                    <button type="submit" class="save-btn">Save Product</button>
-                </div>
-            </form>
-        </section>
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -112,10 +120,10 @@
         </div>
         <nav class="footer-nav">
             <ul>
-                <li><a href="Dashboard.html">Dashboard</a></li>
-                <li><a href="Products.html">Products</a></li>
-                <li><a href="Orders.html">Orders</a></li>
-                <li><a href="Customers.html">Customers</a></li>
+                <li><a href="../Admin/Dashboard.html">Dashboard</a></li>
+                <li><a href="../Admin/Products.html">Products</a></li>
+                <li><a href="../Admin/Orders.html">Orders</a></li>
+                <li><a href="../Admin/Customer.html">Customers</a></li>
             </ul>
         </nav>
     </div>

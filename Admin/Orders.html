@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../supabase-config.js" defer></script>
+    <script src="Orders.js" defer></script>
+
+    <link rel="stylesheet" href="../Common.css">
+    <link rel="stylesheet" href="Orders.css">
+
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="../Landing/OreoBitesLogo.jpg" alt="OreoBites logo"></div>
+        <nav>
+            <ul>
+                <li><a href="Dashboard.html">Dashboard</a></li>
+                <li><a href="Products.html">Products</a></li>
+                <li><a href="Orders.html">Orders</a></li>
+                <li><a href="Customer.html">Customers</a></li>
+            </ul>
+        </nav>
+        <a href="#logout" aria-label="Log out" class="logout-icon" id="logout-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </a>
+    </header>
+
+    <main>
+        <section class="orders-view active" id="orders-view">
+            <div class="orders-header">
+                <h1>Orders</h1>
+                <div class="search-box">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="order-search" placeholder="Search Order ID">
+                </div>
+            </div>
+
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- JS fills this in -->
+                </tbody>
+            </table>
+
+            <div class="pagination" id="pagination">
+                <!-- JS fills this in -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ORDER DETAILS MODAL -->
+    <div class="modal-overlay" id="order-modal-overlay">
+        <div class="modal order-modal" role="dialog" aria-modal="true">
+            <h3>Order Details</h3>
+
+            <div class="order-modal-section-label">Order Details</div>
+            <div class="order-modal-row"><span>Order ID</span><span id="od-order-id"></span></div>
+            <div class="order-modal-row"><span>Date and Time</span><span id="od-date"></span></div>
+            <div class="order-modal-row"><span>Status</span><span id="od-status"></span></div>
+
+            <div class="order-modal-section-label">Customer Information</div>
+            <div class="order-modal-row"><span>Name</span><span id="od-name"></span></div>
+            <div class="order-modal-row"><span>Student ID</span><span id="od-student-id"></span></div>
+            <div class="order-modal-row"><span>Year and Section</span><span id="od-year-section"></span></div>
+
+            <div class="order-modal-section-label">Items Ordered</div>
+            <table class="order-items-table">
+                <thead>
+                    <tr><th>Product</th><th>Quantity</th><th>Price</th><th>Total</th></tr>
+                </thead>
+                <tbody id="od-items-body"></tbody>
+                <tfoot>
+                    <tr class="order-items-total-row">
+                        <td colspan="3">Total Amount</td>
+                        <td id="od-total-amount"></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="order-modal-section-label">Payment Information</div>
+            <div class="order-modal-row"><span id="od-payment-label">Payment Method</span><span id="od-payment-value"></span></div>
+
+            <div class="order-modal-actions">
+                <button type="button" class="mark-paid-btn" id="mark-paid-btn">Mark as Paid</button>
+                <button type="button" class="close-modal-btn" id="close-modal-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+    <div class="footer-container">
+        <div class="footer-brand">
+            <div class="footer-logo"><img src="../Landing/OreoBitesLogo.jpg" alt="OreoBites logo"></div>
+        </div>
+        <nav class="footer-nav">
+            <ul>
+                <li><a href="Dashboard.html">Dashboard</a></li>
+                <li><a href="Products.html">Products</a></li>
+                <li><a href="Orders.html">Orders</a></li>
+                <li><a href="Customer.html">Customers</a></li>
+            </ul>
+        </nav>
+    </div>
+    <p class="footer-disclaimer">School Purposes Only - 2026</p>
+    </footer>
+</body>
+</html>

@@ -1,32 +1,376 @@
-/*TAGLINE*/
+:root {
+    --tan: #F3E3B8;
+    --tan-deep: #EBD69E;
+    --ink-soft: #3A2314;
+}
 
-.tag_line {
+/* Smooth scroll for in-page anchor jumps (About / Contact) */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Quicksand', var(--font);
     background-color: var(--cream);
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 60px 20px;
+}
+
+h1, h2, h3,
+nav a,
+.touch-cta {
+    font-family: 'Baloo 2', 'Quicksand', var(--font);
+}
+
+/* HEADER TWEAKS (design shows sentence case, tighter tracking) */
+nav a {
+    letter-spacing: 0.3px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding-bottom: 4px;
+}
+
+nav a:hover {
+    opacity: 0.75;
+}
+
+.nav-active {
+    border-bottom: 2px solid var(--white);
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--ink-soft);
+    outline-offset: 3px;
+}
+
+header a:focus-visible {
+    outline-color: var(--white);
+}
+
+/* SHARED SECTION SHELL */
+main section {
+    background-color: var(--cream);
+    padding: 76px 24px;
+}
+
+.hero,
+.about,
+.touch {
     position: relative;
 }
 
-.tag_line h1{
-    max-width: 500px;
-    font-size: 1.8rem;
-    line-height: 1.6rem;
-    font-weight: normal;
+/* Offset anchored sections so the fixed header doesn't cover the heading
+   when jumped to via nav links */
+.about,
+.touch {
+    scroll-margin-top: 90px;
 }
 
-.cake-img {
-  position: absolute;
+/* Decorative heading flourishes: the little comma marks in the design */
+.flourish {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    font-size: clamp(2rem, 4vw, 2.9rem);
+    font-weight: 700;
+    line-height: 1.1;
 }
 
-.cake-1 { top: 40%; left: 5%;  width: 140px; }
-.cake-2 { top: 65%; left: 2%;  width: 120px; }
-.cake-3 { top: 30%; left: 22%; width: 60px;  }
-.cake-4 { top: 55%; left: 18%; width: 140px; }
-.cake-5 { top: 78%; left: 8%;  width: 150px; }
-.cake-6 { top: 60%; left: 40%; width: 130px; }
-.cake-7 { top: 70%; right: 8%; width: 150px; }
+.flourish::before,
+.flourish::after {
+    content: "";
+    width: 26px;
+    height: 30px;
+    flex: none;
+    background-color: currentColor;
+    /* two teardrop dashes, mirrored either side of the heading */
+    -webkit-mask: radial-gradient(ellipse 5px 11px at 30% 35%, #000 99%, transparent 100%),
+                  radial-gradient(ellipse 4px 8px at 72% 66%, #000 99%, transparent 100%);
+            mask: radial-gradient(ellipse 5px 11px at 30% 35%, #000 99%, transparent 100%),
+                  radial-gradient(ellipse 4px 8px at 72% 66%, #000 99%, transparent 100%);
+    transform: rotate(-12deg);
+}
+
+.flourish::after {
+    transform: rotate(12deg) scaleX(-1);
+}
+
+/* WAVE DIVIDERS */
+.wave {
+    background-color: var(--cream);
+    line-height: 0;
+}
+
+.wave svg {
+    display: block;
+    width: 100%;
+    height: 90px;
+}
+
+.wave svg path {
+    fill: var(--tan);
+}
+
+.wave-flip svg {
+    transform: scaleY(-1);
+}
+
+/* HERO */
+.hero {
+    padding-top: 64px;
+    padding-bottom: 40px;
+}
+
+.hero-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    align-items: center;
+    gap: 48px;
+}
+
+.hero-text h1 {
+    font-size: clamp(2.4rem, 5.2vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.05;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.hero-text p {
+    max-width: 40ch;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    font-weight: 500;
+}
+
+.hero-art img {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    margin-left: auto;
+}
+
+/* ABOUT (now also contains the "Why Oreo Bites" grid) */
+.about {
+    background-color: var(--tan);
+    padding-top: 48px;
+    padding-bottom: 48px;
+}
+
+.about-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 32px;
+}
+
+.about-copy .flourish {
+    margin-bottom: 16px;
+}
+
+.about-copy p {
+    max-width: 46ch;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.02rem;
+    line-height: 1.75;
+    font-weight: 500;
+}
+
+.heart-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 16px;
+    color: var(--brown);
+}
+
+.heart-rule .rule {
+    width: 58px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: currentColor;
+    opacity: 0.55;
+}
+
+/* WHY GRID (lives inside .about now) */
+.why-grid {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.why-item {
+    text-align: center;
+}
+
+.why-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 16px;
+    background-color: var(--cream);
+    border-radius: 47% 53% 55% 45% / 52% 46% 54% 48%;   /* hand-drawn blob */
+    color: var(--brown);
+    font-size: 1.9rem;
+    transform: rotate(-4deg);
+}
+
+.why-item:nth-child(2) .why-icon { transform: rotate(3deg); }
+.why-item:nth-child(3) .why-icon { transform: rotate(-2deg); }
+
+.why-item h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.why-item p {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* GET IN TOUCH */
+.touch {
+    background-color: var(--tan);
+    text-align: center;
+    padding-bottom: 96px;
+}
+
+.touch .flourish {
+    margin-bottom: 18px;
+}
+
+.touch-lede {
+    font-size: 1rem;
+    line-height: 1.7;
+    font-weight: 500;
+    margin-bottom: 52px;
+}
+
+.touch-grid {
+    max-width: 940px;
+    margin: 0 auto 48px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 36px;
+}
+
+.touch-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background-color: var(--brown);
+    color: var(--cream);
+}
+
+.touch-item h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.touch-item p {
+    font-size: 0.97rem;
+    line-height: 1.55;
+    font-weight: 500;
+}
+
+.touch-item a:hover {
+    text-decoration: underline;
+}
+
+.touch-cta {
+    display: inline-block;
+    padding: 15px 34px;
+    border-radius: 999px;
+    background-color: var(--brown);
+    color: var(--cream);
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.touch-cta:hover {
+    background-color: var(--ink-soft);
+    transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .touch-cta {
+        transition: none;
+    }
+    .touch-cta:hover {
+        transform: none;
+    }
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .hero-inner,
+    .about-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 36px;
+    }
+
+    .hero-text {
+        text-align: center;
+    }
+
+    .hero-text p {
+        margin: 0 auto;
+    }
+
+    .hero-art img {
+        margin: 0 auto;
+    }
+
+    .why-grid,
+    .touch-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 42px 28px;
+    }
+
+    .wave svg {
+        height: 60px;
+    }
+}
+
+@media (max-width: 600px) {
+    main section {
+        padding: 56px 20px;
+    }
+
+    .why-grid,
+    .touch-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .flourish {
+        gap: 12px;
+    }
+
+    .flourish::before,
+    .flourish::after {
+        width: 20px;
+        height: 24px;
+    }
+}

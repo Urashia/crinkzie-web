@@ -23,14 +23,31 @@
 })();
 // ------------------------
 
+// Rows shown per pagination page. Bump this up once there's real data
+// to see how it feels — 5 matches the Figma mock's page count.
+const PAGE_SIZE = 5;
+
 const tableBody = document.getElementById('customers-table-body');
-const listView = document.getElementById('customers-view');
-const detailView = document.getElementById('customer-detail-view');
-const backBtn = document.getElementById('back-to-list-btn');
+const paginationEl = document.getElementById('customers-pagination');
+const searchInput = document.getElementById('customer-search');
+const detailOverlay = document.getElementById('customer-detail-view');
+const detailCard = detailOverlay.querySelector('.customer-detail-card');
+const closeBtn = document.getElementById('detail-close-btn');
 const deactivateBtn = document.getElementById('deactivate-btn');
 
+let allCustomers = [];      // everything fetched from Supabase
+let filteredCustomers = []; // allCustomers after the search filter
+let currentPage = 1;
 let currentCustomerId = null;
 
+const ICONS = {
+    arrowLeft: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>`,
+    arrowRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>`
+};
+
+/* ---------------------------------------------------------
+   DATA FETCHING
+--------------------------------------------------------- */
 async function getCustomers() {
     const { data, error } = await supabaseClient
         .from('profiles')
@@ -44,21 +61,47 @@ async function getCustomers() {
     return data;
 }
 
-function showView(view) {
-    listView.classList.toggle('active', view === 'list');
-    detailView.classList.toggle('active', view === 'detail');
+// Fetches from Supabase, then re-applies whatever search/page state is
+// already active. Call this after anything that changes the underlying
+// data (initial load, deactivate/reactivate).
+async function loadCustomers() {
+    allCustomers = await getCustomers();
+    applyFilterAndRender();
 }
 
-async function renderTable() {
-    const customers = await getCustomers();
+/* ---------------------------------------------------------
+   SEARCH + PAGINATION (client-side, over the already-fetched list)
+--------------------------------------------------------- */
+function applyFilterAndRender() {
+    const q = searchInput.value.trim().toLowerCase();
+
+    filteredCustomers = !q
+        ? allCustomers
+        : allCustomers.filter(c => {
+            const name = (c.full_name || '').toLowerCase();
+            const studentId = (c.student_id || '').toLowerCase();
+            return name.includes(q) || studentId.includes(q);
+        });
+
+    const totalPages = Math.max(1, Math.ceil(filteredCustomers.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    renderTable();
+    renderPagination(totalPages);
+}
+
+function renderTable() {
     tableBody.innerHTML = '';
 
-    if (!customers || customers.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="4">No customer records found.</td></tr>';
+    if (filteredCustomers.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="empty-row">No customer records found.</td></tr>';
         return;
     }
 
-    customers.forEach(customer => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = filteredCustomers.slice(start, start + PAGE_SIZE);
+
+    pageItems.forEach(customer => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${customer.student_id || '-'}</td>
@@ -91,6 +134,80 @@ async function renderTable() {
     });
 }
 
+function renderPagination(totalPages) {
+    paginationEl.innerHTML = '';
+
+    if (totalPages <= 1) return; // nothing to page through
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'page-arrow';
+    prevBtn.setAttribute('aria-label', 'Previous page');
+    prevBtn.innerHTML = ICONS.arrowLeft;
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.addEventListener('click', () => {
+        if (currentPage === 1) return;
+        currentPage--;
+        renderTable();
+        renderPagination(totalPages);
+    });
+    paginationEl.appendChild(prevBtn);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.type = 'button';
+        pageBtn.className = 'page-number' + (i === currentPage ? ' active' : '');
+        pageBtn.textContent = i;
+        pageBtn.setAttribute('aria-label', `Page ${i}`);
+        pageBtn.addEventListener('click', () => {
+            currentPage = i;
+            renderTable();
+            renderPagination(totalPages);
+        });
+        paginationEl.appendChild(pageBtn);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'page-arrow';
+    nextBtn.setAttribute('aria-label', 'Next page');
+    nextBtn.innerHTML = ICONS.arrowRight;
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.addEventListener('click', () => {
+        if (currentPage === totalPages) return;
+        currentPage++;
+        renderTable();
+        renderPagination(totalPages);
+    });
+    paginationEl.appendChild(nextBtn);
+}
+
+searchInput.addEventListener('input', () => {
+    currentPage = 1;
+    applyFilterAndRender();
+});
+
+/* ---------------------------------------------------------
+   CUSTOMER DETAIL MODAL
+--------------------------------------------------------- */
+function lockPageScroll() {
+    document.body.style.overflow = 'hidden';
+}
+function unlockPageScroll() {
+    document.body.style.overflow = '';
+}
+
+function openCustomerModal() {
+    detailOverlay.classList.add('open');
+    detailCard.scrollTop = 0;
+    lockPageScroll();
+}
+
+function closeCustomerModal() {
+    detailOverlay.classList.remove('open');
+    unlockPageScroll();
+}
+
 async function openDetail(id) {
     currentCustomerId = id;
 
@@ -118,7 +235,7 @@ async function openDetail(id) {
     const orderList = document.getElementById('order-history-list');
     orderList.innerHTML = '<li>Order history coming soon.</li>';
 
-    showView('detail');
+    openCustomerModal();
 }
 
 async function toggleActive(id) {
@@ -141,14 +258,23 @@ async function toggleActive(id) {
         return;
     }
 
-    renderTable();
+    loadCustomers();
 }
 
-backBtn.addEventListener('click', () => showView('list'));
+closeBtn.addEventListener('click', closeCustomerModal);
+
+// Click on the dimmed backdrop (not the card itself) closes the modal.
+detailOverlay.addEventListener('click', e => {
+    if (e.target === detailOverlay) closeCustomerModal();
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && detailOverlay.classList.contains('open')) closeCustomerModal();
+});
 
 deactivateBtn.addEventListener('click', () => {
     if (currentCustomerId) toggleActive(currentCustomerId);
-    showView('list');
+    closeCustomerModal();
 });
 
-renderTable();
+loadCustomers();

@@ -40,5 +40,5 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
-    window.location.href = 'Dahsboard.html';
+    window.location.href = 'Dashboard.html';
 });

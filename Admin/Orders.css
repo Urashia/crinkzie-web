@@ -1,0 +1,285 @@
+.orders-view {
+    background-color: var(--cream);
+    min-height: 80vh;
+    padding: 40px;
+}
+
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.orders-header h1 {
+    font-family: 'Quicksand', var(--font);
+    font-size: 2rem;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border-radius: 999px;
+    padding: 10px 18px;
+    min-width: 260px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.9rem;
+    color: var(--brown);
+    flex: 1;
+}
+
+/* --- TABLE --- */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.orders-table thead tr {
+    background: var(--brown);
+    color: var(--white);
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 16px 20px;
+    text-align: left;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.9rem;
+}
+
+.orders-table th {
+    font-family: 'Quicksand', var(--font);
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.orders-table tbody tr {
+    border-bottom: 1px solid rgba(33, 15, 4, 0.1);
+}
+
+.orders-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* --- STATUS BADGES --- */
+.status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.status-paid {
+    background: #3f7d4f;
+    cursor: pointer;
+}
+
+.status-paid:hover {
+    opacity: 0.85;
+}
+
+.status-completed {
+    background: #4A5B7B;
+    cursor: default;
+}
+
+.status-pending {
+    background: #E0A94C;
+    cursor: pointer;
+}
+
+.status-pending:hover {
+    opacity: 0.85;
+}
+
+/* --- ACTIONS --- */
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--brown);
+    padding: 4px;
+}
+
+/* --- PAGINATION --- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.page-arrow {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--brown);
+    display: flex;
+    align-items: center;
+}
+
+.page-dots {
+    display: flex;
+    gap: 10px;
+}
+
+.page-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--brown);
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.page-dot.active {
+    background: var(--brown);
+    color: var(--white);
+}
+
+/* =========================================================
+   ORDER DETAILS MODAL
+========================================================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(33, 15, 4, 0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.order-modal {
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 32px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.order-modal h3 {
+    font-family: 'Quicksand', var(--font);
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+}
+
+.order-modal-section-label {
+    background: #FBE9A1;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin: 18px 0 10px;
+}
+
+.order-modal-section-label:first-of-type {
+    margin-top: 0;
+}
+
+.order-modal-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.9rem;
+    padding: 6px 4px;
+}
+
+.order-modal-row span:first-child {
+    opacity: 0.7;
+}
+
+.order-modal-row span:last-child {
+    font-weight: 600;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+.order-items-table th {
+    text-align: left;
+    padding: 6px 4px;
+    opacity: 0.7;
+    font-weight: 600;
+}
+
+.order-items-table td {
+    padding: 6px 4px;
+}
+
+.order-items-total-row td {
+    border-top: 1.5px solid var(--brown);
+    font-weight: 700;
+    padding-top: 10px;
+}
+
+.order-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.mark-paid-btn {
+    padding: 12px 20px;
+    background: #3f7d4f;
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal-btn {
+    padding: 12px 24px;
+    background: #FBE9A1;
+    color: var(--brown);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .orders-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

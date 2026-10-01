@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
+
 :root {
   --brown: #210F04;
   --cream: #FFFEBD;
   --white: #ffffff;
   --font: 'Courier New', monospace;
+  --ink-soft: #3A2314;
 }
 
 * {
@@ -12,8 +15,16 @@
 }
 
 body {
-    font-family: var(--font);
-    color: var(--brown)
+    font-family: 'Quicksand', var(--font);
+    color: var(--brown);
+    background-color: var(--cream);
+    padding-top: 128px; /* NEW — matches header's normal height so content isn't hidden under it */
+}
+
+h1, h2, h3,
+nav a,
+.touch-cta {
+    font-family: 'Baloo 2', 'Quicksand', var(--font);
 }
 
 a {
@@ -25,24 +36,53 @@ ul {
     list-style: none;
 }
 
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--ink-soft);
+    outline-offset: 3px;
+}
+
 /*HEADER*/
 
 header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     background-color: var(--brown);
     color: var(--white);
-    padding: 20px 40px;
+    padding: 14px 40px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+    justify-self: start;
+}
+
+header nav {
+    justify-self: center;
+}
+
+.header-icons {
+    justify-self: end;
+}
+
+/* Admin pages' logout link (see Orders.html) uses this class instead
+   of .header-icons — needs the same right-alignment in the grid's
+   3rd column, otherwise it defaults to justify-self: stretch and the
+   icon renders flush-left next to the nav links. */
+.logout-icon {
+    justify-self: end;
+}
+
+header a:focus-visible {
+    outline-color: var(--white);
 }
 
 .logo img { 
-    height: 120px; 
+    height: 100px; 
     width: auto; 
     padding-left: 20px;
     margin-left: 10px;
-    margin-bottom: -15px;
-    margin-top: -15px;
 }
 
 nav ul {
@@ -53,11 +93,22 @@ nav ul {
 .header-icons {
     display: flex;
     gap: 20px;
+    justify-self: end;
 }
 
 nav a {
-  letter-spacing: 2px;
-  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+nav a:hover {
+    opacity: 0.75;
+}
+
+.nav-active {
+    border-bottom: 2px solid var(--white);
 }
 
 /*FOOTER*/
@@ -111,4 +162,31 @@ footer {
     padding-top: 10px;
     font-size: 0.8rem;
     opacity: 0.7;
+}
+
+/* STICKY HEADER (scroll-based) */
+header {
+    position: fixed; /* CHANGED from sticky — removes the reflow that caused the flicker */
+    top: 0;
+    left: 0;
+    width: 100%; /* NEW — required with fixed, since it's no longer in normal flow */
+    z-index: 1000;
+    transition: padding 0.25s ease, box-shadow 0.25s ease;
+}
+
+header.scrolled {
+    padding: 8px 40px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+header.scrolled .logo img {
+    height: 70px;
+    transition: height 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    header,
+    header.scrolled .logo img {
+        transition: none;
+    }
 }

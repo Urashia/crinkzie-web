@@ -1,0 +1,661 @@
+.cart-page {
+    background-color: var(--cream);
+    min-height: 80vh;
+    padding: 60px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.cart-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.cart-items-selected {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.85;
+    margin-bottom: 24px;
+}
+
+.cart-empty {
+    opacity: 0.65;
+    font-size: 0.95rem;
+    padding: 40px 0;
+}
+
+.cart-empty a {
+    color: var(--brown);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* =========================================================
+   CART ITEM LIST
+========================================================= */
+.cart-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-bottom: 36px;
+}
+
+/* The card is the positioning anchor for both the checkbox (pinned to
+   its left edge) and the delete icon (pinned to its top-right corner),
+   so neither one depends on flex gaps/margins to land in the right spot. */
+.cart-item-card {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    background: #FBE9A1;
+    border-radius: 14px;
+    padding: 18px 20px 18px 34px;
+}
+
+/* Checkbox sits half-over the card's rounded left edge, like the Figma */
+.cart-checkbox {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--brown);
+    background: var(--cream);
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: -13px;
+    transform: translateY(-50%);
+    z-index: 3;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-checkbox::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 900;
+    opacity: 0;
+}
+
+.cart-checkbox.checked {
+    background: var(--brown);
+}
+
+.cart-checkbox.checked::after {
+    opacity: 1;
+}
+
+.cart-item-delete {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    color: var(--brown);
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
+}
+
+.cart-item-delete:hover {
+    opacity: 1;
+}
+
+.cart-item-delete svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Just an image placeholder slot — transparent so the card color shows
+   through until a real product photo is set, instead of a solid white box. */
+.cart-item-thumb {
+    width: 130px;
+    height: 130px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1.5px dashed rgba(33, 15, 4, 0.3);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.cart-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cart-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding-right: 24px; /* keep clear of the delete icon */
+}
+
+.cart-item-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.cart-item-divider {
+    height: 1.5px;
+    background: rgba(33, 15, 4, 0.4);
+    margin-bottom: 10px;
+}
+
+.cart-item-unit-price {
+    text-align: right;
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0 0 auto;
+}
+
+.cart-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.cart-item-total {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.cart-item-total span {
+    font-weight: 700;
+}
+
+/* =========================================================
+   QUANTITY SELECTOR (same look as ProductDetail's, but class-based
+   since there can be many of these on one page)
+========================================================= */
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    border: 1.5px solid var(--brown);
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
+}
+
+.quantity-selector button {
+    width: 40px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--brown);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+    padding: 0;
+    border-radius: 0;
+}
+
+.quantity-selector button:hover {
+    background: rgba(33, 15, 4, 0.07);
+}
+
+.quantity-selector input {
+    width: 56px;
+    height: 26px;
+    text-align: center;
+    border: none;
+    border-radius: 999px;
+    background: var(--brown);
+    color: var(--white);
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0;
+    outline: none;
+}
+
+/* =========================================================
+   CONTINUE SHOPPING / PROCEED TO CHECKOUT
+========================================================= */
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.continue-shopping-btn,
+.checkout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 10px;
+    min-width: 210px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.continue-shopping-btn svg,
+.checkout-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.continue-shopping-btn {
+    background: transparent;
+    color: var(--brown);
+    border: 1.5px solid var(--brown);
+}
+
+.continue-shopping-btn:hover {
+    background: var(--brown);
+    color: var(--white);
+}
+
+.checkout-btn {
+    background: var(--brown);
+    color: var(--white);
+    border: 1.5px solid var(--brown);
+}
+
+.checkout-btn:hover {
+    background: #3a1e0d;
+}
+
+@media (max-width: 640px) {
+    .cart-item-card {
+        flex-direction: column;
+    }
+    .cart-item-thumb {
+        width: 100%;
+        height: 160px;
+    }
+    .cart-item-info {
+        padding-right: 0;
+    }
+    .cart-actions {
+        flex-direction: column;
+    }
+    .continue-shopping-btn,
+    .checkout-btn {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   MODAL BASE (shared by the Order Summary modal)
+========================================================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(33, 15, 4, 0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal {
+    position: relative;
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal h3 {
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+/* =========================================================
+   ORDER SUMMARY MODAL
+   (identical to ProductDetail.css so the two flows look the same)
+========================================================= */
+.order-summary-overlay {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.order-summary-modal {
+    max-width: 540px;
+    max-height: 85vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 26px 26px 22px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(33, 15, 4, 0.3) transparent;
+}
+
+.order-summary-modal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-summary-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.order-summary-modal::-webkit-scrollbar-thumb {
+    background: rgba(33, 15, 4, 0.3);
+    border-radius: 999px;
+}
+
+.order-summary-modal h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+.order-section {
+    margin-bottom: 16px;
+}
+
+.order-section h4 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.order-field-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.order-field {
+    flex: 1;
+    min-width: 0;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 10px;
+    padding: 7px 12px 5px;
+}
+
+.order-field:focus-within {
+    border-color: var(--brown);
+}
+
+.order-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(33, 15, 4, 0.75);
+    margin-bottom: 2px;
+}
+
+.order-field input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Quicksand', var(--font);
+    font-size: 0.9rem;
+    color: var(--brown);
+    outline: none;
+}
+
+.delivery-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.delivery-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.delivery-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.delivery-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.delivery-label {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.delivery-location {
+    display: block;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.delivery-note {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.order-items-list {
+    background: var(--brown);
+    border-radius: 12px;
+    padding: 10px;
+    max-height: 182px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.order-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-items-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+}
+
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--white);
+}
+
+.order-item-thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.order-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.order-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.order-item-qty {
+    align-self: flex-start;
+    background: #C98A4B;
+    color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.order-item-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.order-summary-bottom {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.order-total-box,
+.order-payment-box {
+    flex: 1;
+    min-width: 170px;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.order-total-box h4,
+.order-payment-box h4 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.order-total-row.muted {
+    color: rgba(33, 15, 4, 0.5);
+}
+
+.order-total-row.highlight {
+    background: #FBE9A1;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 8px -4px -4px;
+    font-weight: 700;
+}
+
+.payment-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.payment-btn {
+    flex: 1;
+    padding: 9px 6px;
+    border: 1.5px solid rgba(33, 15, 4, 0.5);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--brown);
+    font-family: 'Quicksand', var(--font);
+    font-weight: 600;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.payment-btn.active {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: var(--white);
+}
+
+.payment-note {
+    background: #FBE9A1;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.74rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.place-order-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--brown);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.place-order-btn:hover {
+    background: #3a1e0d;
+}
+
+@media (max-width: 480px) {
+    .order-summary-modal {
+        max-height: 90vh;
+        padding: 20px 16px 18px;
+    }
+    .order-summary-modal h3 {
+        font-size: 1.3rem;
+    }
+    .order-summary-bottom {
+        flex-direction: column;
+    }
+    .order-field-row {
+        flex-direction: column;
+    }
+    .order-items-list {
+        max-height: 150px;
+    }
+    .payment-btn {
+        font-size: 0.8rem;
+        padding: 10px 8px;
+    }
+}

@@ -1,38 +1,53 @@
 /*PRODUCTS VIEW*/
 
-.products-view, .product-form-view {
-    display: none;
+.products-view {
     background-color: var(--cream);
     min-height: 80vh;
     padding: 40px;
-}
-
-.products-view.active, .product-form-view.active {
-    display: block;
 }
 
 .products-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
 .products-header h1 {
     font-size: 2rem;
     font-weight: bold;
+    letter-spacing: 1px;
 }
 
 .add-product-btn {
     background: var(--brown);
     color: var(--white);
     border: none;
-    padding: 12px 20px;
-    font-family: var(--font);
-    font-weight: bold;
+    padding: 12px 22px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 0.85rem;
     letter-spacing: 1px;
+    text-transform: uppercase;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 999px;
+    transition: opacity 0.15s ease;
+}
+
+.add-product-btn:hover {
+    opacity: 0.85;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+.products-table-wrapper {
+    background: var(--white);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(33, 15, 4, 0.12);
 }
 
 .products-table {
@@ -46,20 +61,44 @@
     color: var(--white);
 }
 
-.products-table th, .products-table td {
+.products-table th {
     text-align: left;
-    padding: 14px 16px;
+    padding: 16px 20px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    letter-spacing: 0.4px;
 }
 
-.products-table tbody tr:nth-child(even) {
-    background: #f0e6c8;
+.products-table td {
+    text-align: left;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(33, 15, 4, 0.12);
 }
 
-.product-photo-cell img {
-    width: 32px;
-    height: 32px;
+.products-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.empty-row {
+    text-align: center !important;
+    padding: 28px 16px !important;
+    color: rgba(33, 15, 4, 0.6);
+}
+
+.product-photo-cell img,
+.product-photo-placeholder {
+    width: 36px;
+    height: 36px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 8px;
+}
+
+.product-photo-placeholder {
+    background: #e8dcc0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brown);
 }
 
 .action-btn {
@@ -68,33 +107,89 @@
     cursor: pointer;
     margin-right: 8px;
     color: var(--brown);
+    transition: opacity 0.15s ease;
 }
 
-/*PRODUCT FORM*/
+.action-btn:hover {
+    opacity: 0.65;
+}
 
-.product-form {
+/* =========================================================
+   PRODUCT FORM MODAL
+   Same dimmed + blurred overlay pattern as the Customer Detail
+   and Order Summary modals elsewhere on the site.
+========================================================= */
+.product-form-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(33, 15, 4, 0.2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.product-form-overlay.open {
+    display: flex;
+}
+
+.product-form-card {
+    position: relative;
     background: var(--white);
     padding: 30px;
     border-radius: 8px;
+    width: 100%;
     max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(33, 15, 4, 0.3) transparent;
+}
+
+.product-form-card::-webkit-scrollbar {
+    width: 6px;
+}
+
+.product-form-card::-webkit-scrollbar-thumb {
+    background: rgba(33, 15, 4, 0.3);
+    border-radius: 999px;
+}
+
+.form-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--brown);
 }
 
 .form-top-row {
     display: flex;
+    align-items: flex-start;
     gap: 20px;
     margin-bottom: 24px;
+    padding-right: 24px; /* keeps content clear of the close button */
 }
 
 .photo-preview {
     width: 100px;
     height: 100px;
-    background: #e8dcc0;
+    background: #FBE9A1;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
+    color: var(--brown);
 }
 
 .photo-preview img {
@@ -103,15 +198,47 @@
     object-fit: cover;
 }
 
+.photo-upload {
+    flex: 1;
+}
+
 .photo-upload label {
     display: block;
     font-weight: bold;
     margin-bottom: 8px;
 }
 
+.file-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FBE9A1;
+    border: 1.5px solid var(--brown);
+    border-radius: 6px;
+    padding: 6px;
+}
+
+.file-choose-btn {
+    background: var(--white);
+    border: 1px solid var(--brown);
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#file-chosen-label {
+    font-size: 0.85rem;
+    color: var(--brown);
+    opacity: 0.75;
+}
+
 .form-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     gap: 16px;
     margin-bottom: 16px;
 }
@@ -123,39 +250,63 @@
     font-size: 0.85rem;
 }
 
-.form-field input, .form-field textarea {
+.form-field input,
+.form-field textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--brown);
-    font-family: var(--font);
-    background: #f5eeda;
+    padding: 10px 14px;
+    border: 1.5px solid var(--brown);
+    border-radius: 6px;
+    font-family: 'Quicksand', var(--font);
+    background: #FBE9A1;
+    color: var(--brown);
+}
+
+.form-field textarea {
+    resize: vertical;
 }
 
 .form-actions {
-    display: flex;
-    gap: 12px;
     margin-top: 20px;
 }
 
-.save-btn, .cancel-btn {
-    padding: 12px 20px;
-    font-family: var(--font);
-    font-weight: bold;
-    border: 1px solid var(--brown);
-    cursor: pointer;
-    border-radius: 4px;
-}
-
 .save-btn {
-    background: var(--brown);
-    color: var(--white);
+    padding: 12px 24px;
+    font-family: 'Quicksand', var(--font);
+    font-weight: 700;
+    border: 1.5px solid var(--brown);
+    background: #FBE9A1;
+    color: var(--brown);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s ease;
 }
 
-.cancel-btn {
-    background: transparent;
+.save-btn:hover {
+    background: #f5dd82;
 }
 
-.no-photo {
-    font-size: 0.7rem;
-    opacity: 0.6;
+@media (max-width: 700px) {
+    .products-table-wrapper {
+        overflow-x: auto;
+    }
+    .products-table {
+        min-width: 480px;
+    }
+}
+
+@media (max-width: 560px) {
+    .products-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .form-top-row {
+        flex-direction: column;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .product-form-card {
+        padding: 24px 20px;
+        max-height: 90vh;
+    }
 }
