@@ -2,7 +2,7 @@
    Cart.js
    -----------------------------------------------------------
    STATUS: LIVE — reads and writes the real "cart_items" table,
-   and now creates real "orders"/"order_items" rows via
+   and creates real "orders"/"order_items" rows via
    PaymentFlow.js (createRealOrder, processEwalletPayment).
 
    getCurrentUser() is duplicated from ProductDetail.js so this
@@ -10,17 +10,22 @@
    live in the shared PaymentFlow.js instead, loaded via a
    <script> tag in Cart.html before this file.
 
+   Requires SweetAlert2 + alerts.js to be loaded before this file.
+
+   CHECKOUT RULES
+     - Logged-out visitors who press "Proceed to Checkout" are asked
+       to log in or create an account first (requireLogin in alerts.js).
+     - Name / contact number / email in the Order Summary come from the
+       account and are read-only.
+
    REAL TABLE SHAPES (confirmed against Supabase)
      orders       id, user_id, status, payment_reference, total_amount, created_at
      order_items  id, order_id, product_id, product_name, quantity, price
-
-   "Proceed to Checkout" opens the exact same Order Summary modal
-   markup/behavior as the Buy Now flow in ProductDetail.js, just
-   fed whichever cart items are checked — and once an order is
-   placed, those rows are deleted from cart_items for real.
 --------------------------------------------------------- */
 
 const LOGIN_PAGE_PATH = "../Log-in/Account.html";
+const SIGNUP_PAGE_PATH = "../Log-in/Creation.html";
+const PROFILE_PAGE_PATH = "../Log-in/Profile.html";
 
 const DELIVERY_LOCATION = "UCC Congress (Campus)";
 const PAYMENT_METHODS = [
@@ -84,6 +89,11 @@ async function deleteCartItem(cartItemId) {
     if (error) console.error('Failed to remove cart item:', error);
 }
 
+async function isLoggedIn() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    return !!session;
+}
+
 async function getCurrentUser() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return null;
@@ -105,6 +115,11 @@ async function getCurrentUser() {
         contact_number: profile.phone,
         email: profile.email
     };
+}
+
+// A profile is "complete" when the three locked checkout fields are usable.
+function profileIsComplete(user) {
+    return !!(user.name && user.contact_number && user.email && /^\S+@\S+\.\S+$/.test(user.email));
 }
 
 function escapeHtml(str) {
@@ -228,13 +243,30 @@ function setupCartActions() {
         window.location.href = "../Shop/Shop.html";
     });
 
-    document.getElementById("checkout-btn").addEventListener("click", () => {
-        const selected = getSelectedItems();
-        if (selected.length === 0) {
-            alert("Please select at least one item to checkout.");
+    document.getElementById("checkout-btn").addEventListener("click", async () => {
+        // Logged-out visitors must log in or sign up before checking out.
+        if (!(await isLoggedIn())) {
+            await requireLogin(
+                LOGIN_PAGE_PATH,
+                SIGNUP_PAGE_PATH,
+                "Please log in or create an account to check out."
+            );
             return;
         }
-        openOrderSummary(selected);
+
+        const selected = getSelectedItems();
+        if (selected.length === 0) {
+            showWarning("Please select at least one item to checkout.");
+            return;
+        }
+
+        const user = await getCurrentUser();
+        if (!user) {
+            showError("We couldn't load your account details. Please refresh the page and try again.");
+            return;
+        }
+
+        openOrderSummary(selected, user);
     });
 }
 
@@ -261,16 +293,31 @@ function setupOrderSummary() {
     });
 }
 
-async function openOrderSummary(items) {
+// Makes Name / Contact Number / Email read-only and adds a small hint under
+// the "Customer Information" heading (once). Cart.html doesn't need editing.
+function lockCustomerFields() {
+    ["order-name", "order-contact", "order-email"].forEach(id => {
+        document.getElementById(id).readOnly = true;
+    });
+
+    const heading = document.querySelector("#order-summary-overlay .order-section h4");
+    if (heading && !document.getElementById("order-info-note")) {
+        heading.insertAdjacentHTML(
+            "afterend",
+            `<p class="order-info-note" id="order-info-note">Filled in from your account. To change these, update your profile.</p>`
+        );
+    }
+}
+
+async function openOrderSummary(items, user) {
     const overlay = document.getElementById("order-summary-overlay");
     orderItems = items;
 
-    const user = await getCurrentUser();
-    if (user) {
-        document.getElementById("order-name").value = user.name || "";
-        document.getElementById("order-contact").value = user.contact_number || "";
-        document.getElementById("order-email").value = user.email || "";
-    }
+    // These three fields are read-only: they always come from the account.
+    lockCustomerFields();
+    document.getElementById("order-name").value = user.name || "";
+    document.getElementById("order-contact").value = user.contact_number || "";
+    document.getElementById("order-email").value = user.email || "";
 
     renderOrderItems();
     renderOrderTotals();
@@ -337,9 +384,9 @@ function setPlaceOrderBusy(busy) {
 }
 
 /* ---------------------------------------------------------
-   PLACE ORDER — now wired to real Supabase inserts (PaymentFlow.js)
-   plus the PayMongo e-wallet flow for online payments. On success,
-   the checked-out items are removed from cart_items for real.
+   PLACE ORDER — real Supabase inserts (PaymentFlow.js) plus the
+   PayMongo e-wallet flow for online payments. On success, the
+   checked-out items are removed from cart_items for real.
 
    Duplicate protection:
      1. isPlacingOrder blocks extra clicks while we're working.
@@ -351,19 +398,6 @@ function setPlaceOrderBusy(busy) {
 async function handlePlaceOrder() {
     // Ignore any click that happens while an order is already in progress.
     if (isPlacingOrder) return;
-
-    const name = document.getElementById("order-name").value.trim();
-    const contact = document.getElementById("order-contact").value.trim();
-    const email = document.getElementById("order-email").value.trim();
-
-    if (!name || !contact || !email) {
-        alert("Please fill in your name, contact number, and email address.");
-        return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-        alert("Please enter a valid email address.");
-        return;
-    }
     if (orderItems.length === 0) return;
 
     // Lock immediately — before any await — so a fast double-click can't slip through.
@@ -371,15 +405,31 @@ async function handlePlaceOrder() {
     setPlaceOrderBusy(true);
 
     try {
+        // Re-check the session in case it expired while the modal was open.
+        if (!(await isLoggedIn())) {
+            await requireLogin(
+                LOGIN_PAGE_PATH,
+                SIGNUP_PAGE_PATH,
+                "Your session has ended. Please log in again to place your order."
+            );
+            return;
+        }
+
+        // Use the saved account details, not the on-screen fields, so they
+        // can't be changed from the browser.
+        const user = await getCurrentUser();
+        if (!user) {
+            showError("We couldn't load your account details. Please refresh the page and try again.");
+            return;
+        }
+        if (!profileIsComplete(user)) {
+            await requireProfile(PROFILE_PAGE_PATH);
+            return;
+        }
+
         const subtotal = orderItems.reduce((sum, i) => sum + i.price * i.qty, 0);
         const discount = 0;
         const total = subtotal - discount;
-
-        const user = await getCurrentUser();
-        if (!user) {
-            window.location.href = LOGIN_PAGE_PATH;
-            return;
-        }
 
         // createRealOrder() lives in PaymentFlow.js — inserts into the real
         // "orders" + "order_items" tables, matching the actual Supabase schema.
@@ -390,7 +440,7 @@ async function handlePlaceOrder() {
             items: orderItems
         });
 
-        if (!createdOrder) return; // createRealOrder() already alerted the user
+        if (!createdOrder) return; // createRealOrder() already showed an error popup
 
         if (selectedPayment === "ewallet") {
             // processEwalletPayment() also lives in PaymentFlow.js.
@@ -413,7 +463,10 @@ async function handlePlaceOrder() {
         await Promise.all(checkedOutIds.map(id => deleteCartItem(id)));
 
         closeOrderSummary();
-        alert("Order placed. We'll message you once it's ready for pick-up at UCC Congress.");
+        await showSuccess(
+            "We'll message you once it's ready for pick-up at UCC Congress.",
+            "Order placed!"
+        );
     } finally {
         // Always unlock, whatever happened above.
         isPlacingOrder = false;

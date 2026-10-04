@@ -367,3 +367,220 @@ header.scrolled .logo img {
         transition: none;
     }
 }
+
+   /* =========================================================
+   SweetAlert2 THEME  — paste at the bottom of Common.css
+   (replace the earlier SweetAlert block if you added one)
+   Matches the Home page: cream + tan surfaces, brown ink,
+   hand-drawn blob corners, pill buttons, heart-rule divider.
+========================================================= */
+
+/* Colors fall back to hard-coded values on pages where
+   --tan / --cream / --brown aren't defined. */
+.swal2-container {
+    --sw-cream: var(--cream, #FBF6EA);
+    --sw-tan: var(--tan, #F3E3B8);
+    --sw-tan-deep: var(--tan-deep, #EBD69E);
+    --sw-brown: var(--brown, #210F04);
+    --sw-ink-soft: var(--ink-soft, #3B2412);
+    --sw-green: #4A6B4A;
+    --sw-red: #A8453A;
+    --sw-amber: #C8892B;
+    --sw-blue: #5B6F8A;
+
+    z-index: 99999 !important;
+}
+
+/* Backdrop: same warm brown as your other modal overlays */
+.swal2-container.swal2-backdrop-show,
+.swal2-container.swal2-noanimation {
+    background: rgba(33, 15, 4, 0.55);
+}
+
+/* ---------- Popup card ---------- */
+.swal2-popup {
+    width: 26em;
+    max-width: calc(100% - 32px);
+    padding: 2.6em 1.8em 2em;
+    background:
+        linear-gradient(var(--sw-tan), var(--sw-tan)) top left / 100% 12px no-repeat,
+        var(--sw-cream);
+    border-radius: 34px 38px 32px 40px / 38px 32px 40px 34px; /* hand-drawn blob */
+    box-shadow: 0 22px 60px rgba(33, 15, 4, 0.3);
+    color: var(--sw-brown);
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* ---------- Title + heart-rule style divider ---------- */
+.swal2-popup .swal2-title {
+    padding: 0.4em 0.6em 0;
+    color: var(--sw-brown);
+    font-family: 'Baloo 2', 'Quicksand', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.swal2-popup .swal2-title::after {
+    content: "";
+    display: block;
+    width: 58px;
+    height: 3px;
+    margin: 12px auto 0;
+    border-radius: 2px;
+    background: var(--sw-brown);
+    opacity: 0.35;
+}
+
+/* ---------- Message text ---------- */
+.swal2-popup .swal2-html-container {
+    margin: 1em 1.2em 0.4em;
+    color: var(--sw-ink-soft);
+    font-size: 1.02rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+/* ---------- Buttons: pill shaped, lift on hover ---------- */
+.swal2-popup .swal2-actions {
+    gap: 12px;
+    margin-top: 1.6em;
+}
+
+.swal2-popup .swal2-styled {
+    margin: 0;
+    padding: 0.8em 2.2em;
+    border-radius: 999px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: none;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.swal2-popup .swal2-styled.swal2-confirm {
+    background: var(--sw-brown);
+    color: var(--sw-cream);
+}
+
+.swal2-popup .swal2-styled.swal2-confirm:hover {
+    background: var(--sw-ink-soft);
+    transform: translateY(-2px);
+}
+
+.swal2-popup .swal2-styled.swal2-cancel {
+    background: transparent;
+    color: var(--sw-brown);
+    border: 2px solid var(--sw-brown);
+}
+
+.swal2-popup .swal2-styled.swal2-cancel:hover {
+    background: var(--sw-tan);
+    transform: translateY(-2px);
+}
+
+.swal2-popup .swal2-styled:focus {
+    box-shadow: 0 0 0 4px var(--sw-tan-deep);
+}
+
+/* ---------- Icons ---------- */
+/* Success: deep green, with the ring and cover pieces matched to the card */
+.swal2-popup .swal2-icon.swal2-success {
+    border-color: var(--sw-green);
+    color: var(--sw-green);
+}
+.swal2-popup .swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(74, 107, 74, 0.25);
+}
+.swal2-popup .swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--sw-green);
+}
+.swal2-popup .swal2-icon.swal2-success .swal2-success-fix,
+.swal2-popup .swal2-icon.swal2-success [class^='swal2-success-circular-line'] {
+    background: var(--sw-cream);
+}
+
+/* Error: warm brick red */
+.swal2-popup .swal2-icon.swal2-error {
+    border-color: var(--sw-red);
+    color: var(--sw-red);
+}
+.swal2-popup .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: var(--sw-red);
+}
+
+/* Warning, info, question */
+.swal2-popup .swal2-icon.swal2-warning {
+    border-color: var(--sw-amber);
+    color: var(--sw-amber);
+}
+.swal2-popup .swal2-icon.swal2-info {
+    border-color: var(--sw-blue);
+    color: var(--sw-blue);
+}
+.swal2-popup .swal2-icon.swal2-question {
+    border-color: var(--sw-brown);
+    color: var(--sw-brown);
+}
+
+/* ---------- Loading spinner ---------- */
+.swal2-popup .swal2-loader {
+    border-color: var(--sw-brown) transparent var(--sw-brown) transparent;
+}
+
+/* ---------- Toast (small corner notification) ---------- */
+.swal2-popup.swal2-toast {
+    width: auto;
+    max-width: 90vw;
+    padding: 0.7em 1.2em;
+    background: var(--sw-cream);
+    border: 2px solid var(--sw-tan-deep);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(33, 15, 4, 0.22);
+}
+
+.swal2-popup.swal2-toast .swal2-title {
+    padding: 0;
+    margin: 0 0.4em;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.swal2-popup.swal2-toast .swal2-title::after {
+    display: none;
+}
+
+.swal2-timer-progress-bar {
+    background: var(--sw-brown);
+    opacity: 0.35;
+}
+
+/* ---------- Small phones ---------- */
+@media (max-width: 480px) {
+    .swal2-popup {
+        padding: 2.2em 1.2em 1.6em;
+    }
+
+    .swal2-popup .swal2-title {
+        font-size: 1.5rem;
+    }
+
+    .swal2-popup .swal2-actions {
+        width: 100%;
+    }
+
+    .swal2-popup .swal2-styled {
+        flex: 1;
+        padding: 0.8em 1em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .swal2-popup .swal2-styled {
+        transition: none;
+    }
+    .swal2-popup .swal2-styled:hover {
+        transform: none;
+    }
+}

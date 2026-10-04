@@ -11,6 +11,8 @@
         code expires / the user cancels)
      3. For "pickup" (cash) orders: nothing extra — they're just
         left as "pending" until an admin marks them Paid/Completed
+
+   Requires SweetAlert2 + alerts.js to be loaded before this file.
 --------------------------------------------------------- */
 
 // Your local Node backend for now. Swap this to your deployed
@@ -53,7 +55,7 @@ async function createRealOrder(order) {
 
     if (orderError || !createdOrder) {
         console.error('Failed to create order:', orderError);
-        alert("Sorry, we couldn't place your order. Please try again.");
+        await showError("We couldn't place your order. Please try again.");
         return null;
     }
 
@@ -71,7 +73,7 @@ async function createRealOrder(order) {
 
     if (itemsError) {
         console.error('Failed to save order items:', itemsError);
-        alert("Your order was started but some items failed to save. Please contact support.");
+        await showError("Your order was started but some items failed to save. Please contact support.");
         return null;
     }
 
@@ -133,7 +135,7 @@ async function runEwalletPayment(orderId, amount) {
     } catch (err) {
         console.error('Could not reach payment server:', err);
         overlay.classList.remove('open');
-        alert("We couldn't connect to the payment service. Please check your connection and try again.");
+        await showError("We couldn't connect to the payment service. Please check your connection and try again.");
         return false;
     }
 
@@ -147,7 +149,7 @@ async function runEwalletPayment(orderId, amount) {
     if (!response.ok || !data || !data.qrImageUrl) {
         console.error('Payment creation failed:', data);
         overlay.classList.remove('open');
-        alert("Sorry, we couldn't generate a payment QR code. Please try again.");
+        await showError("We couldn't generate a payment QR code. Please try again.");
         return false;
     }
 

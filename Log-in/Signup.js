@@ -406,6 +406,8 @@ form.addEventListener('submit', async (e) => {
     // SUPABASE SIGN UP
     // ========================================
 
+    showLoading('Creating your account...');
+
     const { data, error } =
         await supabaseClient.auth.signUp({
 
@@ -429,7 +431,7 @@ form.addEventListener('submit', async (e) => {
                 // ----------------------------------------
 
                 emailRedirectTo:
-                    'http://127.0.0.1:5500/Landing/Home.html',
+                'https://crinkzie.store/Landing/Home.html',
 
 
                 // ----------------------------------------
@@ -459,6 +461,8 @@ form.addEventListener('submit', async (e) => {
             }
         });
 
+    closeAlert();
+
 
     // ========================================
     // HANDLE SIGNUP ERROR
@@ -471,9 +475,9 @@ form.addEventListener('submit', async (e) => {
             error
         );
 
-        alert(
-            'Sign up failed: ' +
-            error.message
+        showError(
+            error.message,
+            'Sign up failed'
         );
 
         return;
@@ -490,8 +494,9 @@ form.addEventListener('submit', async (e) => {
     );
 
 
-    alert(
-        'Account created! Please check your email and click the confirmation link.'
+    await showSuccess(
+        'Please check your email and click the confirmation link. If you don’t see it, check your spam or junk folder.',
+        'Account created!'
     );
 
 
@@ -504,7 +509,44 @@ form.addEventListener('submit', async (e) => {
     // After confirmation, Supabase will redirect
     // them automatically to:
     //
-    // http://127.0.0.1:5500/Landing/Home.html
+    // https://crinkzie.store/Landing/Home.html
+});
+
+
+// ========================================
+// TERMS OF SERVICE MODAL
+// ========================================
+
+const termsModal = document.getElementById('terms-modal');
+const openTermsLink = document.getElementById('open-terms');
+const closeTermsBtn = document.getElementById('close-terms');
+
+function openTerms(e) {
+    e.preventDefault();
+    termsModal.classList.add('open');
+    termsModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';   // stop page scrolling behind the modal
+    closeTermsBtn.focus();
+}
+
+function closeTerms() {
+    termsModal.classList.remove('open');
+    termsModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    openTermsLink.focus();
+}
+
+openTermsLink.addEventListener('click', openTerms);
+closeTermsBtn.addEventListener('click', closeTerms);
+
+// Click on the dark area (not the box) closes it
+termsModal.addEventListener('click', (e) => {
+    if (e.target === termsModal) closeTerms();
+});
+
+// Esc closes it
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && termsModal.classList.contains('open')) closeTerms();
 });
 
 

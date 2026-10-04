@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Create Account</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="../alerts.js" defer></script>
     <script src="../supabase-config.js" defer></script>
     <script src="../auth-header.js" defer></script>
     <script src="Signup.js" defer></script>
@@ -24,10 +26,10 @@
         <div class = "logo"><img src="../Crinkzie.png" alt="Crinkzie"></div>
             <nav>
                 <ul>
-                    <li><a href = "../Landing/Home.html"> HOME</a></li>
+                    <li><a href = "../Landing/Home.html"> Home</a></li>
                     <li><a href="../Landing/Home.html#about">About</a></li>
                     <li><a href="../Landing/Home.html#contact">Contact</a></li>
-                    <li><a href = "../Shop/Shop.html"> SHOP</a></li>
+                    <li><a href = "../Shop/Shop.html"> Shop</a></li>
                 </ul>
             </nav>
 
@@ -53,6 +55,7 @@
     <main>
         <section class = "sign-in">
             <div class = "sign-in-box">
+                <div class="auth-badge" aria-hidden="true"><i class="fa-solid fa-cookie-bite"></i></div>
                 <h1>CREATE AN ACCOUNT</h1>
                 <p class = "sign-in-subtext">SIGN IN OR CREATE AN ACCOUNT</p>
 
@@ -122,10 +125,8 @@
                                     <button type="button" class="toggle-password" data-target="confirm-password" aria-label="Show password"></button>
                                 </div>
 
-                                <button type="submit" class="create-account-btn">
-                                    CREATE ACCOUNT
-                                    <span class="terms-text">BY CONTINUING, YOU AGREE TO OUR <a href="#">TERMS OF SERVICE</a></span>
-                                </button>
+                                <button type="submit" class="create-account-btn">CREATE ACCOUNT</button>
+                                <p class="terms-text">BY CONTINUING, YOU AGREE TO OUR <a href="#" id="open-terms">TERMS OF SERVICE</a></p>
                             </div>
                     </form>
 
@@ -198,6 +199,79 @@
 
     <p class="footer-disclaimer">School Purposes Only - 2026</p>
 </footer>
+
+    <!-- TERMS OF SERVICE MODAL -->
+    <div class="modal-overlay" id="terms-modal" aria-hidden="true">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+            <h2 class="modal-title" id="terms-title">TERMS OF SERVICE</h2>
+
+            <div class="modal-body">
+                <p class="terms-updated">Last updated: October 2026</p>
+
+                <h3>1. About Crinkzie</h3>
+                <p>Crinkzie is a small, student-run business that sells freshly baked crinkles. It is operated by one person and is intended only for students of the University of Caloocan City (UCC), Congressional Campus.</p>
+
+                <h3>2. Who Can Order</h3>
+                <p>Crinkzie is available to UCC Congressional Campus students only. By creating an account, you confirm that you are a current student of this campus and that the information you give (name, year and section, student ID, contact number) is accurate.</p>
+
+                <h3>3. Products and Online Ordering</h3>
+                <p>The website allows users to:</p>
+                <ul>
+                    <li>Browse available crinkles</li>
+                    <li>Add products to a cart</li>
+                    <li>Place orders</li>
+                    <li>Pay through the available payment methods</li>
+                    <li>Monitor order status</li>
+                </ul>
+                <p>All products are sold as listed. Available products, prices, ordering periods, and stock quantities are set by Crinkzie and may change at any time.</p>
+
+                <h3>4. Freshly Baked, No Cancellations</h3>
+                <p>Every Crinkzie order is baked fresh after it is placed. Because of this, <strong>orders cannot be cancelled, changed, or refunded once they have been placed.</strong> Please review your cart carefully before checking out.</p>
+
+                <h3>5. Pre-Orders and Ready Stock</h3>
+                <p>Crinkzie uses both pre-orders and limited ready stock. For ready-stock orders, the system checks available inventory before confirming your quantity. For pre-orders, your order creates a baking requirement, and items are baked for the scheduled batch.</p>
+
+                <h3>6. Payment</h3>
+                <p>Crinkzie accepts the following payment methods:</p>
+                <ul>
+                    <li><strong>QR-based payment:</strong> Your payment must be verified before your order is baked. Verification may take some time, and Crinkzie may hold or decline an order if payment cannot be confirmed.</li>
+                    <li><strong>Cash on campus:</strong> You pay in full in cash when you receive your order within the UCC Congressional Campus. Please prepare the exact amount when possible.</li>
+                </ul>
+                <p>Because every order is baked fresh and cannot be cancelled, customers who repeatedly fail to claim or pay for cash orders may be restricted from placing future orders.</p>
+
+                <h3>7. Campus-Only Delivery</h3>
+                <p>All orders are delivered <strong>within the UCC Congressional Campus only.</strong> Crinkzie cannot cater to or deliver outside the campus, and no exceptions can be made. Customers are responsible for providing accurate details and being available during the scheduled delivery or handoff time. Orders that are not received may not be replaced or refunded.</p>
+
+                <h3>8. Accounts and Data Access</h3>
+                <p>Customers can only view their own account information and order history. You are responsible for keeping your password secure and for all activity under your account.</p>
+
+                <h3>9. Privacy and Data Retention</h3>
+                <p>Crinkzie collects only the information needed to process your orders. Your personal information and order records are kept private and are not sold or shared with third parties. <strong>All customer data will be deleted at the end of the semester.</strong></p>
+
+                <h3>10. Intellectual Property</h3>
+                <p>The Crinkzie name, logo, product images, website content, and designs belong to Crinkzie and may not be copied or reused without permission.</p>
+
+                <h3>11. Disclaimer</h3>
+                <p>Crinkzie is a small student-run business. Product availability, baking schedules, and delivery times are provided in good faith but are not guaranteed. Crinkzie products do not contain nuts, but they do contain common baking ingredients such as flour, eggs, and milk. Customers with allergies should check before ordering.</p>
+
+                <h3>12. Limitation of Liability</h3>
+                <p>To the extent permitted by law, Crinkzie shall not be liable for indirect, incidental, or financial losses resulting from the use of this website, delays, or unavailable products. Users are responsible for the orders they place.</p>
+
+                <h3>13. System Security</h3>
+                <p>Crinkzie may monitor activity on the website to protect accounts and keep the system secure. Misuse, such as fake orders, tampering with payments, or abusing the system, may result in account suspension.</p>
+
+                <h3>14. Changes to These Terms</h3>
+                <p>Crinkzie may update these Terms when business rules, products, payment, or ordering processes change. Updated terms apply once they are published on the website.</p>
+
+                <h3>15. Acceptance</h3>
+                <p>By creating an account, placing an order, or proceeding through checkout, you acknowledge and accept these Terms of Service.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="modal-close-btn" id="close-terms">Close</button>
+            </div>
+        </div>
+    </div>
     
 </body>
 </html>

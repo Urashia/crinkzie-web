@@ -26,6 +26,25 @@ document.querySelectorAll('.toggle-password').forEach(btn => {
     });
 });
 
+// Where to go after signing in.
+// Other pages (e.g. Product Detail) can send people here with
+// "Account.html?redirect=/path/to/page". Only same-site paths are accepted,
+// so nobody can use this link to bounce a customer to another website.
+const DEFAULT_AFTER_LOGIN = '/Shop/Shop.html';
+
+function getAfterLoginUrl() {
+    const requested = new URLSearchParams(window.location.search).get('redirect');
+    if (!requested) return DEFAULT_AFTER_LOGIN;
+
+    try {
+        const url = new URL(requested, window.location.origin);
+        if (url.origin !== window.location.origin) return DEFAULT_AFTER_LOGIN;
+        return url.pathname + url.search + url.hash;
+    } catch (err) {
+        return DEFAULT_AFTER_LOGIN;
+    }
+}
+
 const signinForm = document.getElementById('signin-form');
 
 signinForm.addEventListener('submit', async (e) => {
@@ -34,12 +53,16 @@ signinForm.addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
+    showLoading('Signing you in...');
+
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
+    closeAlert();
+
     if (error) {
-        alert('Sign in failed: ' + error.message);
+        showError(error.message, 'Sign in failed');
         return;
     }
 
-    window.location.href = '/Shop/Shop.html';
+    window.location.href = getAfterLoginUrl();
 });

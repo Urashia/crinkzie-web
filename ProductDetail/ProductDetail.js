@@ -14,6 +14,15 @@
                             PaymentFlow.js via a <script> tag before
                             this one in ProductDetail.html.
 
+   CHECKOUT RULES (new):
+   - "Buy Now" requires a login. Logged-out visitors get a popup asking
+     them to log in or create an account first.
+   - The Customer Information fields in Order Summary are LOCKED
+     (read-only). They always show the logged-in profile and cannot be
+     edited. Place Order also uses the profile values, not the inputs.
+
+   Requires SweetAlert2 + alerts.js to be loaded before this file.
+
    NOTE: single-photo only. Products have one image_url column —
    there's no gallery, no thumbnails, no prev/next.
 --------------------------------------------------------- */
@@ -40,6 +49,13 @@
 --------------------------------------------------------- */
 
 const LOGIN_PAGE_PATH = "../Log-in/Account.html";
+const SIGNUP_PAGE_PATH = "../Log-in/Creation.html";
+
+// Login link that sends the customer back to THIS page after signing in
+function getLoginUrl() {
+    return LOGIN_PAGE_PATH + "?redirect=" +
+        encodeURIComponent(window.location.pathname + window.location.search);
+}
 
 const SORT_OPTIONS = [
     { value: "recent", label: "Most Recent" },
@@ -55,7 +71,7 @@ const DELIVERY_NOTE = "Please note: All orders are delivered within UCC Congress
 
 const PAYMENT_METHODS = [
     { value: "pickup", label: "Cash", note: "Please prepare the exact amount. Pay when you claim your order at UCC Congress." },
-    { value: "ewallet", label: "E-wallet", note: "Please note that you will be redirected to PayMongo" }
+    { value: "ewallet", label: "E-wallet", note: "Take a screenshot of the QR code and pay using your preferred e-wallet." }
 ];
 
 const DEMO_MANY_ORDER_ITEMS = false;
@@ -126,8 +142,42 @@ async function getCurrentUser() {
         name: profile.full_name,
         avatar_url: null,
         contact_number: profile.phone,
-        email: profile.email
+        // falls back to the login email if the profile row has none
+        email: profile.email || session.user.email
     };
+}
+
+/* ---------------------------------------------------------
+   LOGIN REQUIRED POPUP
+   Shown when a logged-out visitor tries to check out.
+--------------------------------------------------------- */
+async function promptLoginRequired() {
+    // Safety net: if SweetAlert2 somehow isn't loaded, just go to login.
+    if (typeof Swal === "undefined") {
+        window.location.href = getLoginUrl();
+        return;
+    }
+
+    const result = await Swal.fire({
+        title: "Log in to continue",
+        text: "You need an account to check out. Please log in or create one first.",
+        icon: "info",
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: "Log in",
+        denyButtonText: "Create account",
+        cancelButtonText: "Not now",
+        confirmButtonColor: "#210F04",
+        denyButtonColor: "#C98A4B",
+        cancelButtonColor: "#8a8a8a",
+        reverseButtons: true
+    });
+
+    if (result.isConfirmed) {
+        window.location.href = getLoginUrl();
+    } else if (result.isDenied) {
+        window.location.href = SIGNUP_PAGE_PATH;
+    }
 }
 
 async function submitReview(newReview) {
@@ -145,7 +195,7 @@ async function submitReview(newReview) {
 
     if (error || !data || !data[0]) {
         console.error('Failed to submit review:', error);
-        alert("Sorry, we couldn't save your review. Please try again.");
+        await showError("We couldn't save your review. Please try again.");
         return null;
     }
     return data[0];
@@ -366,20 +416,21 @@ function renderProductDetail(product) {
 
                 <div class="order-section">
                     <h4>Customer Information</h4>
+                    <p class="order-locked-note">These details come from your account and can't be edited here.</p>
                     <div class="order-field-row">
-                        <div class="order-field">
+                        <div class="order-field locked">
                             <label for="order-name">Name:</label>
-                            <input id="order-name" type="text" autocomplete="name">
+                            <input id="order-name" type="text" readonly tabindex="-1" autocomplete="off">
                         </div>
-                        <div class="order-field">
+                        <div class="order-field locked">
                             <label for="order-contact">Contact Number:</label>
-                            <input id="order-contact" type="tel" inputmode="tel" autocomplete="tel">
+                            <input id="order-contact" type="tel" readonly tabindex="-1" autocomplete="off">
                         </div>
                     </div>
                     <div class="order-field-row">
-                        <div class="order-field">
+                        <div class="order-field locked">
                             <label for="order-email">Email Address:</label>
-                            <input id="order-email" type="email" autocomplete="email">
+                            <input id="order-email" type="email" readonly tabindex="-1" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -454,12 +505,12 @@ function setupAddToCart() {
         btn.disabled = false;
 
         if (result === "logged-out") {
-            window.location.href = LOGIN_PAGE_PATH;
+            window.location.href = getLoginUrl();
             return;
         }
 
         if (result === "error") {
-            alert("Sorry, we couldn't add this to your cart. Please try again.");
+            showError("We couldn't add this to your cart. Please try again.");
             return;
         }
 
@@ -652,7 +703,7 @@ function setupReviewModal() {
     openBtn.addEventListener("click", async () => {
         const user = await getCurrentUser();
         if (!user) {
-            window.location.href = LOGIN_PAGE_PATH;
+            window.location.href = getLoginUrl();
             return;
         }
         openModal(user);
@@ -678,7 +729,7 @@ function setupReviewModal() {
         e.preventDefault();
 
         if (selectedRating === 0) {
-            alert("Please select a star rating.");
+            showWarning("Please select a star rating.");
             return;
         }
 
@@ -700,6 +751,7 @@ function setupReviewModal() {
         setSortDropdownValue("recent");
         refreshReviewsUI();
         closeModal();
+        showToast("Thanks for your review!");
     });
 }
 
@@ -710,6 +762,18 @@ function setupOrderSummary() {
     const placeOrderBtn = document.getElementById("place-order-btn");
 
     buyNowBtn.addEventListener("click", async () => {
+        if (buyNowBtn.disabled) return;
+
+        // Must be logged in to check out
+        buyNowBtn.disabled = true;
+        const user = await getCurrentUser();
+        buyNowBtn.disabled = false;
+
+        if (!user) {
+            await promptLoginRequired();
+            return;
+        }
+
         const qty = getSelectedQuantity();
 
         const items = [{
@@ -726,7 +790,7 @@ function setupOrderSummary() {
             }
         }
 
-        openOrderSummary(items);
+        openOrderSummary(items, user);
     });
 
     paymentOptions.addEventListener("click", e => {
@@ -747,16 +811,14 @@ function setupOrderSummary() {
     });
 }
 
-async function openOrderSummary(items) {
+function openOrderSummary(items, user) {
     const overlay = document.getElementById("order-summary-overlay");
     orderItems = items;
 
-    const user = await getCurrentUser();
-    if (user) {
-        document.getElementById("order-name").value = user.name || "";
-        document.getElementById("order-contact").value = user.contact_number || "";
-        document.getElementById("order-email").value = user.email || "";
-    }
+    // Customer Information is filled from the account and locked (read-only)
+    document.getElementById("order-name").value = user.name || "";
+    document.getElementById("order-contact").value = user.contact_number || "";
+    document.getElementById("order-email").value = user.email || "";
 
     renderOrderItems();
     renderOrderTotals();
@@ -817,31 +879,29 @@ function setPaymentMethod(value) {
 /* ---------------------------------------------------------
    PLACE ORDER — now wired to real Supabase inserts (PaymentFlow.js)
    plus the PayMongo e-wallet flow for online payments.
+
+   Customer details are taken from the logged-in profile, NOT from
+   the (locked) input boxes, so they can't be changed from the page.
 --------------------------------------------------------- */
 async function handlePlaceOrder() {
-    const name = document.getElementById("order-name").value.trim();
-    const contact = document.getElementById("order-contact").value.trim();
-    const email = document.getElementById("order-email").value.trim();
-
-    if (!name || !contact || !email) {
-        alert("Please fill in your name, contact number, and email address.");
-        return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-        alert("Please enter a valid email address.");
-        return;
-    }
     if (orderItems.length === 0) return;
+
+    // Re-check the login right now (the session may have expired)
+    const user = await getCurrentUser();
+    if (!user) {
+        closeOrderSummary();
+        await promptLoginRequired();
+        return;
+    }
+
+    if (!user.name || !user.contact_number || !user.email) {
+        showWarning("Your account is missing some details (name, contact number, or email). Please contact us so we can fix your account.");
+        return;
+    }
 
     const subtotal = orderItems.reduce((sum, i) => sum + i.price * i.qty, 0);
     const discount = 0;
     const total = subtotal - discount;
-
-    const user = await getCurrentUser();
-    if (!user) {
-        window.location.href = LOGIN_PAGE_PATH;
-        return;
-    }
 
     // createRealOrder() lives in PaymentFlow.js — inserts into the real
     // "orders" + "order_items" tables, matching the actual Supabase schema.
@@ -852,7 +912,7 @@ async function handlePlaceOrder() {
         items: orderItems
     });
 
-    if (!createdOrder) return; // createRealOrder() already alerted the user
+    if (!createdOrder) return; // createRealOrder() already showed an error popup
 
     if (selectedPayment === "ewallet") {
         // processEwalletPayment() also lives in PaymentFlow.js — calls the
@@ -866,7 +926,10 @@ async function handlePlaceOrder() {
     }
 
     closeOrderSummary();
-    alert("Order placed. We'll message you once it's ready for pick-up at UCC Congress.");
+    await showSuccess(
+        "We'll message you once it's ready for pick-up at UCC Congress.",
+        "Order placed!"
+    );
 }
 
 async function init() {

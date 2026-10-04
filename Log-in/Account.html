@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="../alerts.js" defer></script>
     <script src="../supabase-config.js" defer></script>
     <script src="../auth-header.js" defer></script>
     <script src="../mobile-menu.js" defer></script>
@@ -53,19 +55,20 @@
     <main>
         <section class = "sign-in">
             <div class = "sign-in-box">
+                <div class="auth-badge" aria-hidden="true"><i class="fa-solid fa-cookie-bite"></i></div>
                 <h1>SIGN IN</h1>
                 <p class = "sign-in-subtext">SIGN IN OR CREATE AN ACCOUNT</p>
 
                     <form class="auth-form" id="signin-form">
                         <div class="input-group">
                             <label for="email">EMAIL</label>
-                            <input type="email" id="email" name="email" required>
+                            <input type="email" id="email" name="email" autocomplete="email" required>
                         </div>
-                     <div class="input-group">
-                        <label for="password">PASSWORD</label>
-                        <input type="password" id="password" name="password" required>
-                        <button type="button" class="toggle-password" data-target="password" aria-label="Show password"></button>
-                    </div>
+                        <div class="input-group">
+                            <label for="password">PASSWORD</label>
+                            <input type="password" id="password" name="password" autocomplete="current-password" required>
+                            <button type="button" class="toggle-password" data-target="password" aria-label="Show password"></button>
+                        </div>
                         <button type="submit" class="create-account-btn">SIGN IN</button>
                     </form>
 
@@ -100,7 +103,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="   17.51" y2="6.5"></line>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                     </svg>
                 </a>
             </div>
