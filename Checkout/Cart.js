@@ -34,6 +34,10 @@ let cartItems = [];
 let selectedPayment = "pickup";
 let orderItems = [];
 
+// Guard against duplicate orders: true while an order is being created / paid,
+// so extra clicks on "Place Order" are ignored.
+let isPlacingOrder = false;
+
 async function getCartItems() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return [];
@@ -324,12 +328,30 @@ function setPaymentMethod(value) {
     document.getElementById("payment-note").textContent = method ? method.note : "";
 }
 
+// Locks / unlocks the Place Order button while an order is in progress.
+function setPlaceOrderBusy(busy) {
+    const btn = document.getElementById("place-order-btn");
+    if (!btn) return;
+    btn.disabled = busy;
+    btn.textContent = busy ? "Processing..." : "Place Order";
+}
+
 /* ---------------------------------------------------------
    PLACE ORDER — now wired to real Supabase inserts (PaymentFlow.js)
    plus the PayMongo e-wallet flow for online payments. On success,
    the checked-out items are removed from cart_items for real.
+
+   Duplicate protection:
+     1. isPlacingOrder blocks extra clicks while we're working.
+     2. The button is disabled and shows "Processing...".
+     3. If the e-wallet payment is cancelled, expires, or fails, the unpaid
+        order is deleted (see processEwalletPayment in PaymentFlow.js) and the
+        Order Summary stays open so the customer can pick e-wallet or cash.
 --------------------------------------------------------- */
 async function handlePlaceOrder() {
+    // Ignore any click that happens while an order is already in progress.
+    if (isPlacingOrder) return;
+
     const name = document.getElementById("order-name").value.trim();
     const contact = document.getElementById("order-contact").value.trim();
     const email = document.getElementById("order-email").value.trim();
@@ -344,50 +366,65 @@ async function handlePlaceOrder() {
     }
     if (orderItems.length === 0) return;
 
-    const subtotal = orderItems.reduce((sum, i) => sum + i.price * i.qty, 0);
-    const discount = 0;
-    const total = subtotal - discount;
+    // Lock immediately — before any await — so a fast double-click can't slip through.
+    isPlacingOrder = true;
+    setPlaceOrderBusy(true);
 
-    const user = await getCurrentUser();
-    if (!user) {
-        window.location.href = LOGIN_PAGE_PATH;
-        return;
-    }
+    try {
+        const subtotal = orderItems.reduce((sum, i) => sum + i.price * i.qty, 0);
+        const discount = 0;
+        const total = subtotal - discount;
 
-    // createRealOrder() lives in PaymentFlow.js — inserts into the real
-    // "orders" + "order_items" tables, matching the actual Supabase schema.
-    const createdOrder = await createRealOrder({
-        user_id: user.id,
-        total: total,
-        payment_method: selectedPayment,
-        items: orderItems
-    });
-
-    if (!createdOrder) return; // createRealOrder() already alerted the user
-
-    if (selectedPayment === "ewallet") {
-        // processEwalletPayment() also lives in PaymentFlow.js.
-        const paid = await processEwalletPayment(createdOrder.id, total);
-        if (!paid) {
-            closeOrderSummary();
+        const user = await getCurrentUser();
+        if (!user) {
+            window.location.href = LOGIN_PAGE_PATH;
             return;
         }
+
+        // createRealOrder() lives in PaymentFlow.js — inserts into the real
+        // "orders" + "order_items" tables, matching the actual Supabase schema.
+        const createdOrder = await createRealOrder({
+            user_id: user.id,
+            total: total,
+            payment_method: selectedPayment,
+            items: orderItems
+        });
+
+        if (!createdOrder) return; // createRealOrder() already alerted the user
+
+        if (selectedPayment === "ewallet") {
+            // processEwalletPayment() also lives in PaymentFlow.js.
+            const paid = await processEwalletPayment(createdOrder.id, total);
+            if (!paid) {
+                // processEwalletPayment() already deleted the unpaid order.
+                // Keep the Order Summary open so the customer can choose
+                // e-wallet or cash again.
+                return;
+            }
+        }
+
+        // Remove the items that were just checked out from the cart itself —
+        // both on screen and for real, in Supabase.
+        const checkedOutIds = orderItems.map(i => i.id);
+        cartItems = cartItems.filter(i => !checkedOutIds.includes(i.id));
+        renderCartItems();
+        updateItemsSelectedCount();
+
+        await Promise.all(checkedOutIds.map(id => deleteCartItem(id)));
+
+        closeOrderSummary();
+        alert("Order placed. We'll message you once it's ready for pick-up at UCC Congress.");
+    } finally {
+        // Always unlock, whatever happened above.
+        isPlacingOrder = false;
+        setPlaceOrderBusy(false);
     }
-
-    // Remove the items that were just checked out from the cart itself —
-    // both on screen and for real, in Supabase.
-    const checkedOutIds = orderItems.map(i => i.id);
-    cartItems = cartItems.filter(i => !checkedOutIds.includes(i.id));
-    renderCartItems();
-    updateItemsSelectedCount();
-
-    await Promise.all(checkedOutIds.map(id => deleteCartItem(id)));
-
-    closeOrderSummary();
-    alert("Order placed. We'll message you once it's ready for pick-up at UCC Congress.");
 }
 
 async function init() {
+    // Wake the (free-tier) payment server now, so the QR code is fast later.
+    wakePaymentBackend();
+
     const { data: { session } } = await supabaseClient.auth.getSession();
 
     if (!session) {

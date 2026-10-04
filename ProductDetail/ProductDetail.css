@@ -939,3 +939,256 @@
         padding: 10px 8px;
     }
 }
+
+/* =========================================================
+   MOBILE VIEW  (keep this block at the very bottom)
+   Header/footer/hamburger menu come from Common.css +
+   mobile-menu.js. This block only handles the page content.
+   Breakpoints match Common.css (768px) with extra tweaks
+   at 480px and 380px for small phones.
+========================================================= */
+@media (max-width: 768px) {
+
+    /* ---------- Page layout: stack photo above info ---------- */
+    .product-detail {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 24px;
+        padding: 24px 16px 40px;
+        min-height: 0;
+    }
+
+    .gallery {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .detail-image {
+        width: 100%;
+        max-width: 480px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    .detail-info {
+        width: 100%;
+        min-width: 0;
+        gap: 10px;
+    }
+
+    .detail-info h1 {
+        font-size: 1.5rem;
+        line-height: 1.25;
+    }
+
+    .detail-price {
+        font-size: 1.3rem;
+        margin: 4px 0;
+    }
+
+    .detail-desc {
+        font-size: 0.95rem;
+    }
+
+    /* ---------- Quantity + action buttons (thumb-friendly) ---------- */
+    .quantity-selector button {
+        width: 48px;
+        height: 44px;
+    }
+
+    .detail-actions {
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .add-to-cart-btn,
+    .buy-now-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 14px 10px;
+        letter-spacing: 0.5px;
+        min-height: 48px;
+    }
+
+    /* ---------- Reviews: summary on top, list below ---------- */
+    .reviews-section {
+        margin-top: 8px;
+    }
+
+    .reviews-section h2 {
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+    }
+
+    .reviews-layout {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 24px;
+    }
+
+    .rating-summary {
+        width: 100%;
+        padding-right: 0;
+        border-right: none;
+        padding-bottom: 20px;
+        border-bottom: 3px solid rgba(33, 15, 4, 0.5);
+    }
+
+    .rating-bar-row {
+        font-size: 0.9rem;
+    }
+
+    .reviews-list-panel {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .reviews-toolbar {
+        flex-wrap: nowrap;
+        gap: 10px;
+    }
+
+    .write-review-btn,
+    .sort-trigger {
+        flex: 1 1 0;
+        min-height: 44px;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .write-review-btn {
+        padding: 10px 12px;
+        border-radius: 999px;
+    }
+
+    .sort-dropdown {
+        flex: 1 1 0;
+    }
+
+    .sort-trigger {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .sort-menu {
+        width: min(240px, calc(100vw - 32px));
+    }
+
+    .sort-option {
+        padding: 14px;
+    }
+
+    .review-card {
+        padding: 14px;
+    }
+
+    .review-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .review-comment {
+        overflow-wrap: anywhere;
+    }
+
+    /* ---------- Modals: use real mobile viewport height ---------- */
+    .modal-overlay {
+        padding: 12px;
+    }
+
+    .modal {
+        padding: 24px 18px;
+        max-height: 92vh;
+        max-height: 92dvh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .modal-close {
+        top: 6px;
+        right: 8px;
+        width: 44px;
+        height: 44px;
+        font-size: 1.6rem;
+    }
+
+    /* 16px stops iOS Safari from zooming in when a field is tapped */
+    #review-form input[type="text"],
+    #review-form textarea,
+    .order-field input {
+        font-size: 16px;
+    }
+
+    .star-input {
+        gap: 10px;
+        font-size: 2rem;
+    }
+
+    .submit-review-btn,
+    .place-order-btn {
+        min-height: 48px;
+    }
+
+    .order-summary-modal {
+        max-height: 92vh;
+        max-height: 92dvh;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .product-detail {
+        padding: 20px 14px 32px;
+    }
+
+    .detail-image {
+        max-width: 100%;
+    }
+
+    .order-summary-modal {
+        padding: 22px 14px 16px;
+    }
+
+    .order-total-box,
+    .order-payment-box {
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* Let the payment labels wrap instead of getting cut off with "…" */
+    .payment-btn {
+        white-space: normal;
+        text-overflow: clip;
+        line-height: 1.25;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 380px) {
+
+    /* Very small phones: stack the two buttons full-width */
+    .detail-actions {
+        flex-direction: column;
+    }
+
+    .add-to-cart-btn,
+    .buy-now-btn {
+        flex: none;
+        width: 100%;
+    }
+
+    .reviews-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sort-menu {
+        left: 0;
+        right: auto;
+    }
+
+    .payment-options {
+        flex-direction: column;
+    }
+}

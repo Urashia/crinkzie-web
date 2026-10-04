@@ -1,49 +1,14 @@
+/* Home.css — page-specific styles only.
+   Shared styles (fonts, colors, header, footer, mobile menu) live in ../Common.css */
+
 :root {
     --tan: #F3E3B8;
     --tan-deep: #EBD69E;
-    --ink-soft: #3A2314;
 }
 
 /* Smooth scroll for in-page anchor jumps (About / Contact) */
 html {
     scroll-behavior: smooth;
-}
-
-body {
-    font-family: 'Quicksand', var(--font);
-    background-color: var(--cream);
-}
-
-h1, h2, h3,
-nav a,
-.touch-cta {
-    font-family: 'Baloo 2', 'Quicksand', var(--font);
-}
-
-/* HEADER TWEAKS (design shows sentence case, tighter tracking) */
-nav a {
-    letter-spacing: 0.3px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    padding-bottom: 4px;
-}
-
-nav a:hover {
-    opacity: 0.75;
-}
-
-.nav-active {
-    border-bottom: 2px solid var(--white);
-}
-
-a:focus-visible,
-button:focus-visible {
-    outline: 3px solid var(--ink-soft);
-    outline-offset: 3px;
-}
-
-header a:focus-visible {
-    outline-color: var(--white);
 }
 
 /* SHARED SECTION SHELL */
@@ -60,6 +25,7 @@ main section {
 
 /* Offset anchored sections so the fixed header doesn't cover the heading
    when jumped to via nav links */
+.hero,
 .about,
 .touch {
     scroll-margin-top: 90px;
@@ -153,7 +119,7 @@ main section {
     margin-left: auto;
 }
 
-/* ABOUT (now also contains the "Why Oreo Bites" grid) */
+/* ABOUT */
 .about {
     background-color: var(--tan);
     padding-top: 48px;
@@ -199,7 +165,11 @@ main section {
     opacity: 0.55;
 }
 
-/* WHY GRID (lives inside .about now) */
+/* WHY SECTION */
+.why .flourish {
+    margin-bottom: 40px;
+}
+
 .why-grid {
     max-width: 1040px;
     margin: 0 auto;
@@ -212,18 +182,25 @@ main section {
     text-align: center;
 }
 
+/* Blob background (bigger now) that holds the image placeholder */
 .why-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 88px;
-    height: 88px;
-    margin-bottom: 16px;
-    background-color: var(--cream);
+    width: 120px;               /* was 88px */
+    height: 120px;              /* was 88px */
+    margin-bottom: 18px;
+    background-color: var(--tan);
     border-radius: 47% 53% 55% 45% / 52% 46% 54% 48%;   /* hand-drawn blob */
     color: var(--brown);
-    font-size: 1.9rem;
     transform: rotate(-4deg);
+}
+
+.why-icon img {
+    display: block;
+    width: 60%;                 /* how much of the blob the image fills */
+    height: 60%;
+    object-fit: contain;
 }
 
 .why-item:nth-child(2) .why-icon { transform: rotate(3deg); }
@@ -289,6 +266,7 @@ main section {
     font-size: 0.97rem;
     line-height: 1.55;
     font-weight: 500;
+    overflow-wrap: anywhere; /* long email never overflows on small screens */
 }
 
 .touch-item a:hover {
@@ -354,9 +332,40 @@ main section {
     }
 }
 
+/* MOBILE */
+@media (max-width: 768px) {
+    /* mobile header is shorter (76px), so anchors need less offset */
+    .hero,
+    .about,
+    .touch {
+        scroll-margin-top: 76px;
+    }
+}
+
 @media (max-width: 600px) {
     main section {
-        padding: 56px 20px;
+        padding: 48px 20px;
+    }
+
+    .hero {
+        padding-top: 36px;
+        padding-bottom: 24px;
+    }
+
+    .hero-inner {
+        gap: 28px;
+    }
+
+    .hero-text h1 {
+        font-size: clamp(2rem, 9vw, 2.6rem);
+    }
+
+    .hero-text p {
+        font-size: 1rem;
+    }
+
+    .hero-art img {
+        max-width: 100%;
     }
 
     .why-grid,
@@ -364,13 +373,127 @@ main section {
         grid-template-columns: minmax(0, 1fr);
     }
 
+    .why .flourish {
+        margin-bottom: 28px;
+    }
+
+    .touch {
+        padding-bottom: 64px;
+    }
+
+    .touch-lede {
+        margin-bottom: 36px;
+    }
+
+    .touch-lede br {
+        display: none; /* let the sentence wrap naturally on narrow screens */
+    }
+
+    .touch-grid {
+        gap: 32px;
+        margin-bottom: 36px;
+    }
+
     .flourish {
         gap: 12px;
+        font-size: clamp(1.6rem, 7vw, 2rem);
     }
 
     .flourish::before,
     .flourish::after {
         width: 20px;
         height: 24px;
+    }
+
+    .wave svg {
+        height: 40px;
+    }
+}
+
+
+/* =========================================================
+   PHONE POLISH  (keep this block at the very bottom)
+   Extra touches on top of the 600px block above:
+   full-width thumb-sized button, easier-to-tap contact
+   links, and slightly more compact spacing.
+========================================================= */
+@media (max-width: 600px) {
+
+    .hero-text p {
+        max-width: none;
+    }
+
+    .hero-art img {
+        max-width: 380px;
+    }
+
+    .about {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .about-copy p {
+        font-size: 0.98rem;
+        line-height: 1.7;
+    }
+
+    .why-grid {
+        gap: 30px;
+    }
+
+    .why-icon {
+        width: 100px;           /* was 72px */
+        height: 100px;          /* was 72px */
+        margin-bottom: 14px;
+    }
+
+    .why-item h3 {
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+    }
+
+    .why-item p {
+        max-width: 34ch;
+        margin: 0 auto;
+        font-size: 0.95rem;
+    }
+
+    .touch-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+    }
+
+    /* phone / email / address links get a bigger tap area */
+    .touch-item a {
+        display: inline-block;
+        padding: 6px 0;
+    }
+
+    /* the main button: full-width and easy to hit with a thumb */
+    .touch-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 340px;
+        min-height: 52px;
+        margin: 0 auto;
+        padding: 14px 24px;
+    }
+}
+
+@media (max-width: 380px) {
+
+    main section {
+        padding: 40px 16px;
+    }
+
+    .hero-text h1 {
+        font-size: clamp(1.8rem, 9.5vw, 2.2rem);
+    }
+
+    .flourish {
+        gap: 8px;
     }
 }

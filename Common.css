@@ -2,7 +2,7 @@
 
 :root {
   --brown: #210F04;
-  --cream: #FFFEBD;
+  --cream: #FFFBD8;
   --white: #ffffff;
   --font: 'Courier New', monospace;
   --ink-soft: #3A2314;
@@ -18,7 +18,13 @@ body {
     font-family: 'Quicksand', var(--font);
     color: var(--brown);
     background-color: var(--cream);
-    padding-top: 128px; /* NEW — matches header's normal height so content isn't hidden under it */
+    padding-top: 88px; /* matches header's normal height (60px logo + 28px padding) so content isn't hidden under it */
+
+    /* STICKY FOOTER: keeps the footer at the bottom when the page content is short */
+    min-height: 100vh;   /* fallback */
+    min-height: 100dvh;  /* accounts for mobile browser address bars */
+    display: flex;
+    flex-direction: column;
 }
 
 h1, h2, h3,
@@ -78,9 +84,9 @@ header a:focus-visible {
     outline-color: var(--white);
 }
 
-.logo img { 
-    height: 100px; 
-    width: auto; 
+.logo img {
+    height: 60px;
+    width: auto;
     padding-left: 20px;
     margin-left: 10px;
 }
@@ -117,11 +123,12 @@ footer {
   background-color: var(--brown);
   color: var(--white);
   padding: 10px 40px;
+  margin-top: auto; /* pushes the footer to the bottom of the page */
 }
 
 .footer-logo img {
-    height: 100px; 
-    width: auto; 
+    height: 60px; /* same as the header logo */
+    width: auto;
 }
 
 .footer-container {
@@ -153,7 +160,7 @@ footer {
     flex-wrap: wrap;
     gap: 50px;
     justify-content: center;
-    margin-top: 70px;
+    margin-top: 50px; /* re-centered for the smaller footer logo */
 }
 
 .footer-disclaimer {
@@ -166,10 +173,10 @@ footer {
 
 /* STICKY HEADER (scroll-based) */
 header {
-    position: fixed; /* CHANGED from sticky — removes the reflow that caused the flicker */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%; /* NEW — required with fixed, since it's no longer in normal flow */
+    width: 100%;
     z-index: 1000;
     transition: padding 0.25s ease, box-shadow 0.25s ease;
 }
@@ -180,13 +187,183 @@ header.scrolled {
 }
 
 header.scrolled .logo img {
-    height: 70px;
+    height: 48px;
     transition: height 0.25s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
     header,
     header.scrolled .logo img {
+        transition: none;
+    }
+}
+
+/* ===== MOBILE MENU PARTS (hidden on desktop) ===== */
+.menu-toggle,
+.menu-close,
+.nav-overlay,
+.drawer-head {
+    display: none;
+}
+
+/* ===== MOBILE VIEW (keep this block at the very bottom) ===== */
+@media (max-width: 768px) {
+
+    body {
+        padding-top: 76px; /* mobile header height: 12 + 52 + 12 */
+    }
+
+    body.menu-open {
+        overflow: hidden;
+    }
+
+    /* HEADER: hamburger | logo | icons */
+    header {
+        padding: 12px 16px;
+    }
+
+    header.scrolled {
+        padding: 6px 16px;
+    }
+
+    .logo {
+        justify-self: center;
+    }
+
+    .logo img {
+        height: 52px;
+        padding-left: 0;
+        margin-left: 0;
+    }
+
+    header.scrolled .logo img {
+        height: 44px;
+    }
+
+    .header-icons {
+        gap: 14px;
+    }
+
+    .menu-toggle,
+    .menu-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        justify-self: start;
+        background: none;
+        border: none;
+        color: var(--white);
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    /* SLIDE-IN MENU (the existing header nav) */
+    header nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        height: 100dvh;
+        width: min(80vw, 320px);
+        background-color: var(--brown);
+        padding: 20px 16px;
+        z-index: 1100;
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform 0.3s ease, visibility 0.3s;
+    }
+
+    header nav.open {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    .drawer-head img {
+        height: 56px;
+        width: auto;
+    }
+
+    header nav ul {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    header nav a {
+        display: block;
+        padding: 14px 18px;
+        border-radius: 999px;
+        font-size: 1.15rem;
+    }
+
+    header nav a.nav-active {
+        border-bottom: none;
+        background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .nav-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 1050;
+    }
+
+    .nav-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* FOOTER: one centered column */
+    footer {
+        padding: 16px 16px 10px;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 12px;
+    }
+
+    .footer-brand {
+        width: 100%;
+    }
+
+    .footer-logo {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(243, 227, 184, 0.4);
+    }
+
+    .footer-logo img {
+        height: 56px;
+    }
+
+    .footer-nav ul {
+        margin-top: 0;
+        gap: 14px;
+        font-size: 0.85rem;
+    }
+
+    .footer-disclaimer {
+        margin-top: 10px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    header nav,
+    .nav-overlay {
         transition: none;
     }
 }

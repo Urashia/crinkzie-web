@@ -397,3 +397,187 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+/* =========================================================
+   MOBILE VIEW  (keep this block at the very bottom)
+   Phone layout: tighter page, centered profile header,
+   full-width tap-friendly buttons, and the receipt popup
+   becomes a bottom sheet that slides up from the bottom.
+========================================================= */
+@media (max-width: 600px) {
+
+    /* ---------- Page + title ---------- */
+    .profile-page {
+        padding: 28px 16px 48px;
+        min-height: 0;
+    }
+
+    .profile-title {
+        font-size: 1.7rem;
+        letter-spacing: 1px;
+        margin-bottom: 18px;
+        text-align: center;
+    }
+
+    /* ---------- Profile card ---------- */
+    .profile-card {
+        padding: 20px 16px;
+        gap: 16px;
+        margin-bottom: 18px;
+        align-items: stretch;
+    }
+
+    .profile-card-left {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .avatar {
+        width: 72px;
+        height: 72px;
+        min-width: 72px;
+        font-size: 1.5rem;
+    }
+
+    .profile-names h2 {
+        font-size: 1.2rem;
+    }
+
+    .profile-names p {
+        font-size: 0.8rem;
+    }
+
+    .profile-card-right {
+        gap: 0;
+    }
+
+    /* each detail is its own tidy row with a divider */
+    .info-row {
+        gap: 12px;
+        padding: 11px 0;
+        border-bottom: 1px solid rgba(42, 22, 8, 0.15);
+        align-items: flex-start;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-label {
+        flex: none;
+        padding-top: 2px;
+    }
+
+    .info-value {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.88rem;
+        overflow-wrap: anywhere;
+    }
+
+    /* ---------- Orders ---------- */
+    .orders-grid {
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .orders-box {
+        min-height: 0;
+    }
+
+    .orders-box-header {
+        padding: 12px 16px;
+    }
+
+    .orders-list {
+        padding: 12px;
+    }
+
+    .order-row {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .view-receipt-btn {
+        min-height: 40px;
+        padding: 8px 14px;
+        font-size: 0.72rem;
+    }
+
+    .orders-empty {
+        padding: 20px 0;
+    }
+
+    /* ---------- Sign out: full-width thumb button ---------- */
+    .sign-out-btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 52px;
+    }
+
+    /* ---------- Receipt modal -> bottom sheet ---------- */
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal {
+        max-width: 100%;
+        max-height: 90vh;
+        max-height: 90dvh;
+        border-radius: 20px 20px 0 0;
+        padding: 22px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+        overscroll-behavior: contain;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal {
+        transform: translateY(0);
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+        margin-bottom: 14px;
+    }
+
+    .modal-row {
+        padding: 5px 4px;
+        font-size: 0.85rem;
+    }
+
+    .items-table {
+        padding: 0 4px;
+    }
+
+    .items-row {
+        grid-template-columns: minmax(0, 1.8fr) minmax(0, 0.5fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
+        gap: 6px;
+        font-size: 0.8rem;
+        overflow-wrap: anywhere;
+    }
+
+    .items-head {
+        font-size: 0.7rem;
+    }
+
+    .modal-footer {
+        margin-top: 14px;
+    }
+
+    .modal-close-btn {
+        width: 100%;
+        min-height: 48px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal {
+        transition: none;
+    }
+}

@@ -2,6 +2,7 @@
     background-color: var(--cream);
     min-height: 80vh;
     padding: 60px 40px;
+    width: 100%;
     max-width: 1000px;
     margin: 0 auto;
 }
@@ -281,26 +282,6 @@
 
 .checkout-btn:hover {
     background: #3a1e0d;
-}
-
-@media (max-width: 640px) {
-    .cart-item-card {
-        flex-direction: column;
-    }
-    .cart-item-thumb {
-        width: 100%;
-        height: 160px;
-    }
-    .cart-item-info {
-        padding-right: 0;
-    }
-    .cart-actions {
-        flex-direction: column;
-    }
-    .continue-shopping-btn,
-    .checkout-btn {
-        width: 100%;
-    }
 }
 
 /* =========================================================
@@ -637,25 +618,187 @@
     background: #3a1e0d;
 }
 
-@media (max-width: 480px) {
-    .order-summary-modal {
-        max-height: 90vh;
-        padding: 20px 16px 18px;
+
+/* =========================================================
+   MOBILE VIEW  (keep this block at the very bottom)
+   Compact cart cards (small thumbnail beside the details),
+   44px+ tap targets, 16px inputs (no iOS zoom), full-width
+   action buttons, and the order summary as a bottom sheet.
+========================================================= */
+@media (max-width: 768px) {
+
+    .cart-page {
+        min-height: 0;
+        padding: 28px 16px 48px;
     }
+
+    .cart-title {
+        font-size: 1.6rem;
+    }
+
+    .cart-items-selected {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+
+    .cart-empty {
+        padding: 28px 0;
+    }
+
+    .cart-empty a {
+        display: inline-block;
+        padding: 10px 0;
+    }
+
+    /* ---------- Cart cards ---------- */
+    .cart-items-list {
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .cart-item-card {
+        gap: 12px;
+        padding: 14px 12px 14px 24px;
+        border-radius: 12px;
+    }
+
+    /* Checkbox keeps its look, but the tappable area grows to 44px */
+    .cart-checkbox::before {
+        content: "";
+        position: absolute;
+        inset: -9px;
+    }
+
+    .cart-item-thumb {
+        width: 92px;
+        height: 92px;
+        border-radius: 8px;
+    }
+
+    .cart-item-delete {
+        top: 4px;
+        right: 4px;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+    }
+
+    .cart-item-info {
+        padding-right: 0;
+    }
+
+    .cart-item-name {
+        font-size: 1rem;
+        margin-bottom: 8px;
+        padding-right: 40px; /* keep clear of the delete icon */
+    }
+
+    .cart-item-divider {
+        margin-bottom: 8px;
+    }
+
+    .cart-item-unit-price {
+        font-size: 0.9rem;
+    }
+
+    .cart-item-footer {
+        margin-top: 10px;
+        gap: 8px;
+    }
+
+    .cart-item-total {
+        font-size: 0.85rem;
+    }
+
+    .quantity-selector button {
+        width: 44px;
+        height: 44px;
+    }
+
+    .quantity-selector input {
+        width: 48px;
+        height: 28px;
+        font-size: 1rem;
+    }
+
+    /* ---------- Bottom buttons: stacked, full width, checkout on top ---------- */
+    .cart-actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+
+    .continue-shopping-btn,
+    .checkout-btn {
+        width: 100%;
+        min-width: 0;
+        min-height: 52px;
+    }
+
+    /* ---------- Modals become bottom sheets ---------- */
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal {
+        max-width: none;
+        padding: 24px 18px;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .order-summary-modal {
+        max-width: none;
+        max-height: 92vh;
+        max-height: 92dvh;
+        padding: 22px 16px max(18px, env(safe-area-inset-bottom));
+        border-radius: 18px 18px 0 0;
+    }
+
     .order-summary-modal h3 {
         font-size: 1.3rem;
+        margin-bottom: 14px;
     }
-    .order-summary-bottom {
-        flex-direction: column;
-    }
+
     .order-field-row {
         flex-direction: column;
+        gap: 10px;
     }
+
+    .order-field {
+        padding: 8px 12px 6px;
+    }
+
+    .order-field input {
+        font-size: 1rem; /* 16px so iPhones don't zoom on focus */
+        min-height: 24px;
+    }
+
     .order-items-list {
-        max-height: 150px;
+        max-height: 160px;
     }
+
+    .order-summary-bottom {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .order-total-box,
+    .order-payment-box {
+        min-width: 0;
+    }
+
+    .payment-options {
+        flex-wrap: wrap;
+    }
+
     .payment-btn {
-        font-size: 0.8rem;
+        flex: 1 1 90px;
+        min-height: 44px;
         padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+
+    .place-order-btn {
+        min-height: 52px;
     }
 }

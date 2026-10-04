@@ -23,6 +23,16 @@ const PAYMENT_POLL_INTERVAL = 3000;
 const PAYMENT_POLL_TIMEOUT = 30 * 60 * 1000;
 
 /* ---------------------------------------------------------
+   0. WAKE UP THE BACKEND
+   Free Render servers go to sleep when idle, and the first request
+   after that can take 30-60 seconds. Call this when the page loads so
+   the server is already awake by the time the customer checks out.
+--------------------------------------------------------- */
+function wakePaymentBackend() {
+    fetch(PAYMENT_BACKEND_URL, { mode: 'no-cors' }).catch(() => {});
+}
+
+/* ---------------------------------------------------------
    1. CREATE THE REAL ORDER
    order = { user_id, total, payment_method, items: [{id, name, price, qty}] }
    Returns the created order row (with its real numeric id), or null on failure.
@@ -32,7 +42,10 @@ async function createRealOrder(order) {
         .from('orders')
         .insert([{
             user_id: order.user_id,
-            status: 'pending',
+            // E-wallet orders start as "awaiting_payment" (not a real order yet) and
+            // only become real once the payment goes through. Cash orders are real
+            // right away as "pending".
+            status: order.payment_method === 'ewallet' ? 'awaiting_payment' : 'pending',
             total_amount: order.total
         }])
         .select()
@@ -69,9 +82,46 @@ async function createRealOrder(order) {
    2. E-WALLET FLOW: get QR from backend, show it, poll for payment
    Returns true once payment is confirmed, false if the user cancels
    or the code expires without paying.
+
+   The modal now opens IMMEDIATELY with a "Generating..." message, so the
+   customer can see something is happening while the QR is being made
+   (this is what stops the repeat clicks).
 --------------------------------------------------------- */
 async function processEwalletPayment(orderId, amount) {
+    const paid = await runEwalletPayment(orderId, amount);
+
+    // Cancelled, expired, or failed to generate a QR → remove the unpaid order
+    // completely, so it never shows in the customer's profile or the admin page.
+    if (!paid) await discardUnpaidOrder(orderId);
+
+    return paid;
+}
+
+// Deletes an unpaid e-wallet order (and its items). The database function only
+// deletes orders that are still "awaiting_payment" and belong to the signed-in
+// user, so a payment that landed at the last second is never deleted.
+async function discardUnpaidOrder(orderId) {
+    const { error } = await supabaseClient.rpc('discard_unpaid_order', {
+        p_order_id: orderId
+    });
+
+    if (error) console.error('Failed to discard unpaid order:', error);
+}
+
+async function runEwalletPayment(orderId, amount) {
     injectPaymentModalOnce();
+
+    const overlay = document.getElementById('payment-qr-overlay');
+    const img = document.getElementById('payment-qr-image');
+    const statusText = document.getElementById('payment-qr-status');
+    const cancelBtn = document.getElementById('payment-qr-cancel');
+
+    // Loading state: no image yet, no cancel button yet.
+    img.removeAttribute('src');
+    img.style.display = 'none';
+    cancelBtn.style.display = 'none';
+    statusText.textContent = 'Generating your QR code... this may take a few seconds.';
+    overlay.classList.add('open');
 
     let response;
     try {
@@ -82,18 +132,53 @@ async function processEwalletPayment(orderId, amount) {
         });
     } catch (err) {
         console.error('Could not reach payment server:', err);
+        overlay.classList.remove('open');
         alert("We couldn't connect to the payment service. Please check your connection and try again.");
         return false;
     }
 
-    const data = await response.json();
-    if (!response.ok || !data.qrImageUrl) {
+    let data = null;
+    try {
+        data = await response.json();
+    } catch (err) {
+        console.error('Payment server returned a non-JSON response:', err);
+    }
+
+    if (!response.ok || !data || !data.qrImageUrl) {
         console.error('Payment creation failed:', data);
+        overlay.classList.remove('open');
         alert("Sorry, we couldn't generate a payment QR code. Please try again.");
         return false;
     }
 
     return showPaymentModalAndPoll(orderId, data.qrImageUrl);
+}
+
+// Gets the order's current status. It asks the payment server first, because the
+// server checks PayMongo directly and works even if the webhook is down. If the
+// server can't be reached, it falls back to reading the status from Supabase.
+async function getOrderStatus(orderId) {
+    try {
+        const res = await fetch(`${PAYMENT_BACKEND_URL}/check-payment/${orderId}`);
+        if (res.ok) {
+            const body = await res.json();
+            if (body.status) return body.status;
+        }
+    } catch (err) {
+        // fall through to the Supabase check below
+    }
+
+    const { data, error } = await supabaseClient
+        .from('orders')
+        .select('status')
+        .eq('id', orderId)
+        .single();
+
+    if (error) {
+        console.error('Error checking payment status:', error);
+        return null;
+    }
+    return data.status;
 }
 
 function showPaymentModalAndPoll(orderId, qrImageUrl) {
@@ -103,6 +188,8 @@ function showPaymentModalAndPoll(orderId, qrImageUrl) {
     const cancelBtn = document.getElementById('payment-qr-cancel');
 
     img.src = qrImageUrl;
+    img.style.display = '';
+    cancelBtn.style.display = '';
     statusText.textContent = 'Waiting for payment...';
     overlay.classList.add('open');
 
@@ -121,18 +208,10 @@ function showPaymentModalAndPoll(orderId, qrImageUrl) {
                 return;
             }
 
-            const { data, error } = await supabaseClient
-                .from('orders')
-                .select('status')
-                .eq('id', orderId)
-                .single();
+            const status = await getOrderStatus(orderId);
+            if (!status) return;
 
-            if (error) {
-                console.error('Error checking payment status:', error);
-                return;
-            }
-
-            if (data.status === 'paid' || data.status === 'completed') {
+            if (status === 'paid' || status === 'completed') {
                 clearInterval(pollTimer);
                 statusText.textContent = 'Payment received!';
                 setTimeout(() => {

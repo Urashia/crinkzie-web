@@ -213,3 +213,105 @@ input[type="password"]::-ms-reveal {
     letter-spacing: 1px;
     opacity: 0.7;
 }
+
+
+/* =========================================================
+   MOBILE VIEW  (keep this block at the very bottom)
+   Sign in / Sign up: form starts near the top (so the
+   on-screen keyboard doesn't push it out of view), fields
+   are 16px+ (no iOS zoom), every tap target is 44px+.
+========================================================= */
+@media (max-width: 768px) {
+
+    .sign-in {
+        justify-content: flex-start;
+        min-height: 0;
+        padding: 32px 20px 56px;
+    }
+
+    .sign-in h1 {
+        font-size: 1.6rem;
+    }
+
+    .sign-in-box {
+        max-width: 480px;
+    }
+
+    .sign-in-subtext {
+        line-height: 1.5;
+        margin-bottom: 22px;
+    }
+
+    .auth-form,
+    .form-step {
+        gap: 16px;
+    }
+
+    /* ---------- Fields ---------- */
+    .input-group label {
+        top: 9px;
+        left: 12px;
+        font-size: 0.68rem;
+    }
+
+    .input-group input {
+        padding: 26px 52px 10px 12px;
+        border-width: 3px;
+        border-radius: 0;
+        font-size: 1.05rem;   /* 16px+ so iPhones don't zoom on focus */
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .toggle-password {
+        top: 10px;
+        right: 2px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .error-message {
+        font-size: 0.75rem;
+        line-height: 1.35;
+    }
+
+    /* ---------- Sign-up steps ---------- */
+    .progress-row {
+        margin-top: 24px;
+        min-height: 48px;
+    }
+
+    .next-btn,
+    .prev-btn {
+        width: 48px;
+        height: 48px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .create-account-btn {
+        min-height: 56px;
+        padding: 12px;
+    }
+
+    .terms-text {
+        font-size: 0.7rem;
+        line-height: 1.4;
+        text-align: center;
+    }
+
+    .signin-link {
+        padding: 14px 0;
+        margin-top: 8px;
+    }
+
+    /* ---------- Profile rows: label on top, value below ---------- */
+    .profile-row {
+        flex-direction: column;
+        gap: 4px;
+        word-break: break-word;
+    }
+}
