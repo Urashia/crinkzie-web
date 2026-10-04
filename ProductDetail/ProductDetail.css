@@ -158,12 +158,13 @@
     background: #3a1e0d; /* slightly darker brown */
 }
 
-/* Add to Cart click feedback: a quick pop + a green tint while the
+/* Add to Cart click feedback: a quick pop + a yellow tint while the
    button shows a checkmark and "Added!" (see setupAddToCart() in
    ProductDetail.js). Both revert automatically after ~1.2s. */
 .add-to-cart-btn.added {
-    background: #3f7d4f;
-    border-color: #3f7d4f;
+    background: #F2DE7A;
+    border-color: #2A1608;
+    color: #2A1608;
     animation: add-to-cart-pop 0.4s ease;
 }
 

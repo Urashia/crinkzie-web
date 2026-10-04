@@ -156,8 +156,8 @@ input[type="password"]::-ms-reveal {
 }
 
 .dot.completed {
-    background: #31572c;
-    border-color: #31572c;
+    background: #F2DE7A;
+    border-color: #2A1608;
 }
 
 .dot.current {
