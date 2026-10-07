@@ -39,8 +39,12 @@ let activeOrder = null;   // the order currently open in the detail modal
 /* ---------------------------------------------------------
    FORMATTING HELPERS
 --------------------------------------------------------- */
-function formatOrderId(id) {
-    return `ORD - ${String(id).padStart(4, '0')}`;
+
+// Takes the WHOLE order (not just the id).
+// New orders have an order_number like "ORD-001100826" made by the database.
+// Old orders don't, so they fall back to the old "ORD - 0032" style.
+function formatOrderId(order) {
+    return order.order_number || `ORD - ${String(order.id).padStart(4, '0')}`;
 }
 
 function formatDateTime(dateStr) {
@@ -85,6 +89,7 @@ function statusBadge(status) {
 async function loadOrders() {
     // order_items has a real FK to orders, so this embeds cleanly
     // (same pattern already proven working in Profile.js).
+    // select('*') already includes the new order_number column.
     const { data: orders, error: ordersError } = await supabaseClient
         .from('orders')
         .select('*, order_items(*)')
@@ -139,7 +144,7 @@ function getFilteredOrders() {
 
     const term = searchTerm.trim().toLowerCase();
     return allOrders.filter(order =>
-        formatOrderId(order.id).toLowerCase().includes(term) ||
+        formatOrderId(order).toLowerCase().includes(term) ||
         String(order.id).includes(term)
     );
 }
@@ -157,7 +162,7 @@ function renderTable() {
     } else {
         tableBody.innerHTML = pageOrders.map(order => `
             <tr>
-                <td>${formatOrderId(order.id)}</td>
+                <td>${formatOrderId(order)}</td>
                 <td>${order.customer ? order.customer.full_name : '\u2014'}</td>
                 <td>${formatDateTime(order.created_at)}</td>
                 <td>${statusBadge(order.status)}</td>
@@ -230,7 +235,7 @@ async function openOrderDetail(orderId) {
     const items = order.order_items || [];
     const normalized = normalizeStatus(order.status);
 
-    document.getElementById('od-order-id').textContent = formatOrderId(order.id);
+    document.getElementById('od-order-id').textContent = formatOrderId(order);
     document.getElementById('od-date').textContent = formatDateTime(order.created_at);
     document.getElementById('od-status').innerHTML = statusBadge(order.status);
 
@@ -286,7 +291,7 @@ markPaidBtn.addEventListener('click', async () => {
     const next = markPaidBtn.dataset.nextStatus;
     if (!next) return;
 
-    if (!confirm(`Mark ${formatOrderId(activeOrder.id)} as ${STATUS_LABELS[next]}?`)) return;
+    if (!confirm(`Mark ${formatOrderId(activeOrder)} as ${STATUS_LABELS[next]}?`)) return;
 
     const success = await updateOrderStatus(activeOrder.id, next);
     if (!success) return;
@@ -317,7 +322,7 @@ tableBody.addEventListener('click', async e => {
     const next = NEXT_STATUS[normalized];
     if (!next) return;
 
-    if (!confirm(`Mark ${formatOrderId(order.id)} as ${STATUS_LABELS[next]}?`)) return;
+    if (!confirm(`Mark ${formatOrderId(order)} as ${STATUS_LABELS[next]}?`)) return;
 
     const success = await updateOrderStatus(order.id, next);
     if (!success) return;

@@ -36,8 +36,11 @@ const statCustomersEl = document.getElementById('stat-customers');
 const recentOrdersBody = document.getElementById('recent-orders-body');
 const stocksBody = document.getElementById('stocks-body');
 
-function formatOrderId(id) {
-    return `ORD - ${String(id).padStart(4, '0')}`;
+// Takes the WHOLE order (not just the id).
+// New orders have an order_number like "ORD-001100826" made by the database.
+// Old orders don't, so they fall back to the old "ORD - 0032" style.
+function formatOrderId(order) {
+    return order.order_number || `ORD - ${String(order.id).padStart(4, '0')}`;
 }
 
 function formatCurrency(amount) {
@@ -101,7 +104,7 @@ async function loadStats() {
 async function loadRecentOrders() {
     const { data, error } = await supabaseClient
         .from('orders')
-        .select('id, status, total_amount, user_id, profiles(full_name)')
+        .select('id, order_number, status, total_amount, user_id, profiles(full_name)')
         .order('created_at', { ascending: false })
         .limit(RECENT_ORDERS_LIMIT);
 
@@ -123,7 +126,7 @@ async function loadRecentOrders() {
         const statusClass = (order.status || '').toLowerCase();
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${formatOrderId(order.id)}</td>
+            <td>${formatOrderId(order)}</td>
             <td>${customerName}</td>
             <td>${formatCurrency(order.total_amount)}</td>
             <td><span class="status-pill ${statusClass}">${order.status || '-'}</span></td>

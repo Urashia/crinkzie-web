@@ -5,7 +5,7 @@
    - profiles:   id (fk auth.users), full_name, student_id,
                  year_section, email, phone, address, school
    - products:   id, name, price, image_url, ...
-   - orders:     id, user_id, status ('pending','paid' => CURRENT |
+   - orders:     id, order_number, user_id, status ('pending','paid' => CURRENT |
                  'completed' => HISTORY), payment_reference,
                  total_amount, created_at
    - order_items: order_id, product_id, product_name, quantity, price
@@ -59,8 +59,11 @@ function statusLabel(status) {
     return status ? status.charAt(0).toUpperCase() + status.slice(1) : '';
 }
 
-function orderNumber(id) {
-    return 'ORD - ' + String(id).padStart(4, '0');
+// Takes the WHOLE order (not just the id).
+// New orders have an order_number like "ORD-001100826" made by the database.
+// Old orders don't, so they fall back to the old "ORD - 0032" style.
+function orderNumber(order) {
+    return order.order_number || 'ORD - ' + String(order.id).padStart(4, '0');
 }
 
 /* ---------- profile ---------- */
@@ -92,6 +95,7 @@ async function loadProfile(session) {
 /* ---------- orders ---------- */
 
 async function loadOrders(userId) {
+    // select('*') already includes the new order_number column.
     const { data: orders, error } = await supabaseClient
         .from('orders')
         .select('*, order_items(*)')
@@ -110,7 +114,7 @@ async function loadOrders(userId) {
 
 function orderDisplayName(order) {
     const items = order.order_items || [];
-    if (items.length === 0) return orderNumber(order.id);
+    if (items.length === 0) return orderNumber(order);
     if (items.length === 1) return items[0].product_name;
     return `${items[0].product_name} +${items.length - 1} more`;
 }
@@ -148,7 +152,7 @@ function openReceiptModal(orderId) {
     const order = ordersCache.find(o => String(o.id) === String(orderId));
     if (!order) return;
 
-    document.getElementById('m-order-id').textContent = orderNumber(order.id);
+    document.getElementById('m-order-id').textContent = orderNumber(order);
     document.getElementById('m-date').textContent = formatDateTime(order.created_at);
     document.getElementById('m-status').textContent = statusLabel(order.status);
 

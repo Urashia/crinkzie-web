@@ -1,0 +1,385 @@
+/* =========================================================
+   ADMIN MOBILE STYLES
+   Covers: Admin-login, Dashboard, Orders, Products, Customers
+   Link this LAST on every admin page (after the page's own CSS):
+   <link rel="stylesheet" href="Admin-mobile.css">
+========================================================= */
+
+/* ---------- Shared: no sideways page scroll, safe areas ---------- */
+.admin-login-main,
+.dashboard-view,
+.orders-view,
+.products-view,
+.customers-view {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.search-bar,
+.search-box,
+.form-field input,
+.form-field textarea,
+.input-group input {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   TABLET  (<= 900px)
+========================================================= */
+@media (max-width: 900px) {
+    .dashboard-view,
+    .orders-view,
+    .products-view,
+    .customers-view {
+        padding: 28px 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .dashboard-panels {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   PHONE  (<= 700px)
+========================================================= */
+@media (max-width: 700px) {
+    .dashboard-view,
+    .orders-view,
+    .products-view,
+    .customers-view {
+        padding: 20px 16px 32px;
+    }
+
+    .dashboard-view h1,
+    .orders-header h1,
+    .products-header h1,
+    .customers-header h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Headers stack: title on top, search / button full width */
+    .orders-header,
+    .products-header,
+    .customers-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .search-bar,
+    .search-box {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* 16px stops iOS from zooming in when a field is focused */
+    .search-bar input,
+    .search-box input,
+    .form-field input,
+    .form-field textarea,
+    .input-group input {
+        font-size: 16px;
+    }
+
+    .add-product-btn {
+        width: 100%;
+        padding: 14px 22px;
+    }
+
+    /* ---------- Tables: scroll sideways inside their wrapper ---------- */
+    .customers-table-wrapper,
+    .products-table-wrapper,
+    .panel-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .customers-table { min-width: 560px; }
+    .products-table  { min-width: 520px; }
+    .dashboard-table { min-width: 420px; }
+
+    /* Orders table has no wrapper, so the table itself scrolls */
+    .orders-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .customers-table th,
+    .customers-table td,
+    .products-table th,
+    .products-table td,
+    .orders-table th,
+    .orders-table td {
+        padding: 12px 14px;
+        font-size: 0.85rem;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+        padding: 12px 14px;
+    }
+
+    /* Bigger tap targets for row actions */
+    .action-btn {
+        padding: 8px;
+        margin-right: 2px;
+    }
+
+    .status-paid,
+    .status-pending {
+        padding: 8px 16px;
+    }
+
+    /* ---------- Pagination ---------- */
+    .pagination {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+    }
+
+    .page-arrow,
+    .page-number,
+    .page-dot {
+        width: 40px;
+        height: 40px;
+    }
+
+    .page-dots {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* ---------- Modals become bottom sheets ---------- */
+    .customer-detail-overlay,
+    .product-form-overlay,
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .customer-detail-card,
+    .product-form-card,
+    .order-modal {
+        max-width: 100%;
+        max-height: 90vh;
+        max-height: 90dvh;
+        border-radius: 16px 16px 0 0;
+        padding: 24px 20px;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .detail-close-btn,
+    .form-close-btn {
+        width: 40px;
+        height: 40px;
+        top: 8px;
+        right: 8px;
+        font-size: 1.6rem;
+    }
+
+    /* Order modal */
+    .order-modal h3 {
+        font-size: 1.3rem;
+        padding-right: 36px;
+    }
+
+    .order-modal-row {
+        flex-wrap: wrap;
+        gap: 4px 12px;
+    }
+
+    .order-items-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .order-modal-actions {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .mark-paid-btn,
+    .close-modal-btn {
+        width: 100%;
+        padding: 14px;
+    }
+
+    /* Customer modal */
+    .detail-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .deactivate-btn {
+        width: 100%;
+        padding: 14px;
+    }
+
+    /* Product form */
+    .form-top-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .photo-preview {
+        width: 100%;
+        height: 160px;
+    }
+
+    .photo-upload {
+        width: 100%;
+    }
+
+    .file-input-wrapper {
+        flex-wrap: wrap;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .form-grid .form-field:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .save-btn {
+        width: 100%;
+        padding: 14px;
+    }
+}
+
+/* =========================================================
+   SMALL PHONE  (<= 480px)
+========================================================= */
+@media (max-width: 480px) {
+    .dashboard-view,
+    .orders-view,
+    .products-view,
+    .customers-view {
+        padding: 16px 12px 28px;
+    }
+
+    /* Dashboard stat cards: keep 2 across, just tighter */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .panel h2 {
+        font-size: 1rem;
+    }
+
+    /* Modal fields go single column */
+    .detail-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-avatar {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* =========================================================
+   VERY SMALL PHONE  (<= 360px)
+========================================================= */
+@media (max-width: 360px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   ADMIN LOGIN  (<= 480px)
+========================================================= */
+@media (max-width: 480px) {
+    .admin-login-main {
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 32px 16px;
+        align-items: flex-start;
+        padding-top: max(48px, env(safe-area-inset-top, 0px));
+    }
+
+    .admin-login-box {
+        max-width: 100%;
+    }
+
+    .admin-logo img {
+        height: 80px;
+        margin-bottom: 14px;
+    }
+
+    .admin-login-box h1 {
+        font-size: 1.3rem;
+        margin-bottom: 22px;
+    }
+
+    .admin-auth-form {
+        gap: 16px;
+    }
+
+    .input-group input {
+        border-width: 3px;
+        padding: 26px 44px 10px 12px;
+        font-size: 16px;
+    }
+
+    .toggle-password {
+        width: 40px;
+        height: 40px;
+        top: 8px;
+        right: 4px;
+    }
+
+    .submit-row {
+        justify-content: stretch;
+    }
+
+    .submit-btn {
+        width: 100%;
+        height: 48px;
+        border-radius: 999px;
+    }
+
+    .admin-error {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape phones: login shouldn't be cut off */
+@media (max-height: 500px) and (orientation: landscape) {
+    .admin-login-main {
+        align-items: flex-start;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .admin-logo img {
+        height: 60px;
+    }
+}
